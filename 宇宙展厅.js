@@ -188,7 +188,7 @@ try{
   const label=document.createElement('div');label.className='label';const number=document.createElement('span'),text=document.createElement('strong'),sub=document.createElement('small');number.className='label-index';number.textContent=String(i+1).padStart(2,'0');text.textContent=w.author;sub.textContent=w.title;label.append(number,text,sub);labels.append(label);
   const selectionRing=new THREE.Mesh(new THREE.TorusGeometry(radius*1.19,.009,6,128),new THREE.MeshBasicMaterial({color:'#dec89a',transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending}));selectionRing.visible=false;root.add(selectionRing);
   const ripple=new THREE.Mesh(rippleGeometry,new THREE.MeshBasicMaterial({color:'#ddc79d',transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending}));ripple.visible=false;root.add(ripple);
-  byWork.set(w,{root,sphere,radius,label,glow,selectionRing,ripple,rippleAge:2,index:i,reveal:reduced.matches||warm?1:0,orbit,orbitRadius,orbitUp,trace,marker,baseAngle,angle:baseAngle,orbitClock:0,driftPhase:i*1.7,driftRate:.15+i*.011,driftAmplitude:Math.min(.105,.48/orbitRadius),motionWeight:1,motionVelocity:0,spinBase:[.038,.022,.032,.027][surface.kind],envBase:surface.envMapIntensity,highlight:0});
+  byWork.set(w,{root,sphere,radius,label,glow,selectionRing,ripple,rippleAge:2,index:i,reveal:reduced.matches||warm?1:0,orbit,orbitRadius,orbitUp,trace,marker,baseAngle,angle:baseAngle,orbitClock:0,driftPhase:Math.random()*Math.PI*2,driftRate:.16+Math.random()*.26,driftPhase2:Math.random()*Math.PI*2,driftRate2:.28+Math.random()*.36,driftAmplitude:Math.min(.45,1.8/orbitRadius),bobPhase:Math.random()*Math.PI*2,bobRate:.22+Math.random()*.32,bobAmplitude:.05+Math.random()*.1,motionWeight:1,motionVelocity:0,spinBase:(Math.random()<.5?-1:1)*(.025+Math.random()*.055),envBase:surface.envMapIntensity,highlight:0});
  });
  textureCache.clear();
  const target=new THREE.Vector3(),desiredTarget=new THREE.Vector3(),offset=new THREE.Vector3(),raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
@@ -309,10 +309,11 @@ try{
    if(still){o.motionWeight=goal;o.motionVelocity=0}else{const error=o.motionWeight-goal,step=(o.motionVelocity+6*error)*dt;o.motionWeight=goal+(error+step)*motionDecay;o.motionVelocity=(o.motionVelocity-6*step)*motionDecay}
    if(!still&&entry.work!==w)o.orbitClock+=dt*o.motionWeight;
    // A paused clock holds its position rather than pulling the planet back to origin.
-   o.angle=entry.work===w?entry.orbitAngle:o.baseAngle+o.driftAmplitude*(Math.sin(o.orbitClock*o.driftRate+o.driftPhase)-Math.sin(o.driftPhase));
+   const wander=o.driftAmplitude*(.64*(Math.sin(o.orbitClock*o.driftRate+o.driftPhase)-Math.sin(o.driftPhase))+.36*(Math.sin(o.orbitClock*o.driftRate2+o.driftPhase2)-Math.sin(o.driftPhase2)));
+   o.angle=entry.work===w?entry.orbitAngle:o.baseAngle+wander;
    if(o.reveal<1){const p=still?1:THREE.MathUtils.clamp((revealTime-.12-o.index*.15)/1.4,0,1);o.reveal=p*p*p*(10+p*(-15+6*p));}
-   const entrance=1-o.reveal;
-   o.root.position.set(Math.cos(o.angle)*o.orbitRadius,Math.sin(o.angle)*o.orbitRadius*o.orbitUp.y,Math.sin(o.angle)*o.orbitRadius*o.orbitUp.z);o.root.position.y-=entrance*.45;o.root.position.z-=entrance*.55;o.root.scale.setScalar(1-entrance*.12);
+   const entrance=1-o.reveal,bob=o.bobAmplitude*Math.sin(o.orbitClock*o.bobRate+o.bobPhase);
+   o.root.position.set(Math.cos(o.angle)*o.orbitRadius,Math.sin(o.angle)*o.orbitRadius*o.orbitUp.y,Math.sin(o.angle)*o.orbitRadius*o.orbitUp.z);o.root.position.y+=-o.orbitUp.z*bob;o.root.position.z+=o.orbitUp.y*bob;o.root.position.y-=entrance*.45;o.root.position.z-=entrance*.55;o.root.scale.setScalar(1-entrance*.12);
    if(!still&&entry.work!==w)o.sphere.rotation.y+=dt*o.spinBase*o.motionWeight;
   }
   if(selected)desiredTarget.copy(byWork.get(selected).root.position);
