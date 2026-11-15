@@ -1,10 +1,10 @@
 /* 本地三维作品展厅：球体、光照、景深导航与作品入口。 */
 (() => {
 'use strict';
-const sourceWorks=window.WORKS,works=Array.isArray(sourceWorks)?sourceWorks:[], host=document.getElementById('scene'), list=document.getElementById('list'), search=document.getElementById('search'), panel=document.getElementById('panel'),toggle=document.getElementById('toggle'),closeButton=document.getElementById('panel-close'),focus=document.getElementById('focus'),notice=document.getElementById('notice'),labels=document.getElementById('labels');
+const sourceWorks=window.WORKS,works=Array.isArray(sourceWorks)?sourceWorks:[], host=document.getElementById('scene'), list=document.getElementById('list'), search=document.getElementById('search'), panel=document.getElementById('panel'),toggle=document.getElementById('toggle'),closeButton=document.getElementById('panel-close'),focus=document.getElementById('focus'),focusIndex=focus.querySelector('.focus-index'),focusStrong=focus.querySelector('strong'),focusDetail=focus.querySelector('.focus-detail'),focusEnter=document.getElementById('focus-enter'),focusCopy=document.getElementById('focus-copy'),focusClose=document.getElementById('focus-close'),toast=document.getElementById('toast'),error=document.getElementById('error'),errorText=document.getElementById('error-text'),brand=document.getElementById('brand'),notice=document.getElementById('notice'),labels=document.getElementById('labels');
 const reduced=matchMedia('(prefers-reduced-motion: reduce)'),coarse=matchMedia('(pointer: coarse)').matches||(navigator.maxTouchPoints>0&&innerWidth<=760);
 const exhibition=window.EXHIBITION||{},exhibitionTitle=exhibition.title||'星间',exhibitionSubtitle=exhibition.subtitle||'学员 AI 作品展';
-document.title=exhibitionTitle+' · '+exhibitionSubtitle;document.querySelector('.brand h1').textContent=exhibitionTitle;document.querySelector('.brand small').textContent=exhibitionSubtitle;
+document.title=exhibitionTitle+' · '+exhibitionSubtitle;document.querySelector('.brand-title').textContent=exhibitionTitle;document.querySelector('.brand small').textContent=exhibitionSubtitle;
 document.getElementById('total').textContent=works.length;toggle.setAttribute('aria-label','作品目录，共 '+works.length+' 件作品');
 let selectPlanet=()=>{}, resetCamera=()=>{}, invalidateLabelLayout=()=>{},sceneReady=false;
 function setSceneReady(ready){sceneReady=ready;document.body.classList.toggle('scene-ready',ready);document.getElementById('reset').disabled=!ready;for(const button of list.querySelectorAll('button'))button.disabled=!ready}
@@ -19,12 +19,27 @@ function setPanel(open){
  else if(!wasHidden){panelAnimation=panel.animate([from,{opacity:0,transform:'translateY(-6px) scale(.99)'}],{duration:220,easing:panelEase});}
  if(panelAnimation){const animation=panelAnimation;animation.finished.then(()=>{if(sequence!==panelSequence)return;panel.hidden=!open;panelAnimation=null;animation.cancel();}).catch(()=>{});}
 }
-function renderList(){const q=search.value.trim().toLowerCase();list.replaceChildren();const matching=works.filter(w=>(w.author+' '+w.title).toLowerCase().includes(q));if(!matching.length){list.textContent=works.length?'未找到作品':'暂无作品';return}matching.forEach((w,i)=>{const row=document.createElement('div');row.className='work';row.style.setProperty('--row',String(i));const name=document.createElement('div');name.className='name';const title=document.createElement('strong');title.textContent=w.author+' · '+w.title;name.append(title);const locate=document.createElement('button');locate.textContent='定位';locate.disabled=!sceneReady;locate.setAttribute('aria-label','定位 '+w.author+' 的星球');locate.addEventListener('click',()=>{selectPlanet(w);setPanel(false);toggle.focus()});const link=document.createElement('a');link.href=w.url;link.textContent='进入';link.setAttribute('aria-label','进入 '+w.author+' 的作品');row.append(name,locate,link);list.append(row)})}
+function renderList(){const q=search.value.trim().toLowerCase();list.replaceChildren();const matching=works.filter(w=>(w.author+' '+w.title).toLowerCase().includes(q));if(!matching.length){const empty=document.createElement('div');empty.className='empty';empty.setAttribute('role','status');empty.textContent=works.length?'未找到作品':'暂无作品';list.append(empty);return}matching.forEach((w,i)=>{const row=document.createElement('div');row.className='work';row.setAttribute('role','listitem');row.style.setProperty('--row',String(i));const name=document.createElement('div');name.className='name';const title=document.createElement('strong');title.textContent=w.author+' · '+w.title;name.append(title);const locate=document.createElement('button');locate.textContent='定位';locate.disabled=!sceneReady;locate.setAttribute('aria-label','定位 '+w.author+' 的星球');locate.addEventListener('click',()=>{selectPlanet(w);setPanel(false);toggle.focus()});const link=document.createElement('a');link.href=w.url;link.textContent='进入';link.setAttribute('aria-label','进入 '+w.author+' 的作品');row.append(name,locate,link);list.append(row)})}
 renderList();search.addEventListener('input',renderList);toggle.addEventListener('click',()=>setPanel(!panelOpen));closeButton.addEventListener('click',()=>{setPanel(false);toggle.focus()});document.getElementById('reset').addEventListener('click',()=>resetCamera());
-window.addEventListener('keydown',e=>{if(e.key==='Escape'&&panelOpen){setPanel(false);toggle.focus()}});
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&panelOpen){e.stopImmediatePropagation();setPanel(false);toggle.focus()}});
 function status(text){notice.textContent=text}
-function info(w,extra){const visible=!!w,wasVisible=focus.classList.contains('visible');if(wasVisible!==visible){focus.classList.toggle('visible',visible);invalidateLabelLayout()}if(!w){focusAnimation?.cancel();focusAnimation=null;return}const title=w.author+' · '+w.title,detail=extra||'点击进入',strong=focus.querySelector('strong'),span=focus.querySelector('span');if(strong.textContent!==title){strong.textContent=title;invalidateLabelLayout();if(!reduced.matches&&wasVisible){focusAnimation?.cancel();focusAnimation=strong.animate([{opacity:0,transform:'translateY(3px)'},{opacity:1,transform:'translateY(0)'}],{duration:280,easing:panelEase});}}if(span.textContent!==detail){span.textContent=detail;invalidateLabelLayout()}}
+let toastTimer=0;
+function toastMsg(text){toast.textContent=text;toast.classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('visible'),1800)}
+async function copyLink(){const text=location.href;try{await navigator.clipboard.writeText(text);toastMsg('链接已复制')}catch{try{const area=document.createElement('textarea');area.value=text;area.setAttribute('readonly','');area.style.position='fixed';area.style.opacity='0';document.body.append(area);area.select();document.execCommand('copy');area.remove();toastMsg('链接已复制')}catch{toastMsg('复制失败，请复制地址栏')}}}
+function info(w,extra,isSelected=false){
+ const visible=!!w,wasVisible=focus.classList.contains('visible');
+ if(wasVisible!==visible){focus.classList.toggle('visible',visible);invalidateLabelLayout()}
+ const selectedNow=visible&&!!isSelected;
+ if(focus.classList.contains('selected')!==selectedNow){focus.classList.toggle('selected',selectedNow);invalidateLabelLayout()}
+ if(!w){focusAnimation?.cancel();focusAnimation=null;focusIndex.textContent='';focusStrong.textContent='';focusDetail.textContent='';return}
+ const index=works.indexOf(w),ordinal=index>=0?String(index+1).padStart(2,'0'):'',title=w.author+' · '+w.title,detail=extra||'点击进入';
+ if(focusIndex.textContent!==ordinal){focusIndex.textContent=ordinal;invalidateLabelLayout()}
+ if(focusStrong.textContent!==title){focusStrong.textContent=title;invalidateLabelLayout();if(!reduced.matches&&wasVisible){focusAnimation?.cancel();focusAnimation=focusStrong.animate([{opacity:0,transform:'translateY(3px)'},{opacity:1,transform:'translateY(0)'}],{duration:280,easing:panelEase});}}
+ if(focusDetail.textContent!==detail){focusDetail.textContent=detail;invalidateLabelLayout()}
+}
 reduced.addEventListener('change',()=>{if(!reduced.matches)return;++panelSequence;panelAnimation?.cancel();panelAnimation=null;panel.hidden=!panelOpen;focusAnimation?.cancel();focusAnimation=null;});
+focusCopy.addEventListener('click',copyLink);document.getElementById('error-retry').addEventListener('click',()=>location.reload());brand.addEventListener('click',()=>resetCamera());
+const guide=document.querySelector('.guide');if(coarse&&guide)guide.textContent='拖动旋转 · 双指缩放 · 轻触星球进入';
 const bootText=document.getElementById('boot-text');if(bootText)bootText.textContent=works.length?'正在点亮 '+works.length+' 颗星球…':'正在准备展厅…';
 function startScene(){
 try{
@@ -182,35 +197,38 @@ try{
   entry.duration=Math.min(1.35,2*(entry.fromLog-entry.toLog)/Math.max(.001,-zoomVelocity));
   entry.velocity=zoomVelocity*entry.duration;entry.fromTarget.copy(target);entry.targetVelocity.copy(desiredTarget).sub(target).multiplyScalar(5.3);entry.orbitAngle=byWork.get(w).angle;entry.opaqueFrame=false;
   entryVeil.style.transition='none';entryVeil.style.opacity='0';document.body.classList.add('is-entering');
-  info(w,'进入中 · Esc 或向外取消');
+  info(w,coarse?'进入中 · 缩小取消':'进入中 · Esc 或向外取消',true);
  }
  function setHash(w){const index=w?works.indexOf(w):-1;try{history.replaceState(null,'',index>=0?'#work-'+(index+1):location.pathname+location.search)}catch{}}
- selectPlanet=w=>{const o=byWork.get(w);if(!o)return;cancelEntry();selected=w;setHash(w);wantedYaw=yaw+.07;wantedPitch=pitch;invalidateLabelLayout();desiredTarget.copy(o.root.position);wantedDistance=Math.max(o.radius*4.5,8);info(w,'点击进入，或继续靠近')};
- resetCamera=()=>{cancelEntry();selected=null;hovered=null;setHash(null);invalidateLabelLayout();panoramaTarget();wantedDistance=panoramaDistance();wantedYaw=.18;wantedPitch=.15;info(null);status('已返回全景')};
+ selectPlanet=w=>{const o=byWork.get(w);if(!o)return;cancelEntry();selected=w;setHash(w);wantedYaw=yaw+.07;wantedPitch=pitch;invalidateLabelLayout();desiredTarget.copy(o.root.position);wantedDistance=Math.max(o.radius*(narrow()?5.4:4.5),8);info(w,coarse?'已选中 · 轻触进入或双指放大':'已选中 · 进入作品或继续靠近',true)};
+ resetCamera=()=>{cancelEntry();selected=null;hovered=null;setHash(null);invalidateLabelLayout();panoramaTarget();wantedDistance=panoramaDistance();wantedYaw=.18;wantedPitch=.15;info(null,undefined,false);status('已返回全景')};
  function zoom(delta,x,y,pickFirst){
   if(!delta||entering)return;
-  if(delta>0){const cancel=!!pendingEntry||!!entry.work;cancelEntry();if(cancel)info(selected,'已取消进入')}
+  if(delta>0){const cancel=!!pendingEntry||!!entry.work;cancelEntry();if(cancel)info(selected,'已取消进入',true)}
   if(entry.work)return;
-  if(delta<0){const over=pick(x,y),w=(pickFirst&&over)||selected||over||nearest(x,y);if(w&&w!==selected){selected=w;setHash(w);wantedYaw=yaw+.07;invalidateLabelLayout();desiredTarget.copy(byWork.get(w).root.position);wantedDistance=Math.max(wantedDistance,byWork.get(w).radius*4);info(w,'继续滚动靠近')}}
+  if(delta<0){const over=pick(x,y),w=(pickFirst&&over)||selected||over||nearest(x,y);if(w&&w!==selected){selected=w;setHash(w);wantedYaw=yaw+.07;invalidateLabelLayout();desiredTarget.copy(byWork.get(w).root.position);wantedDistance=Math.max(wantedDistance,byWork.get(w).radius*4);info(w,coarse?'双指放大继续靠近':'继续滚动靠近',true)}}
   const r=selected?byWork.get(selected).radius:1;wantedDistance=clamp(wantedDistance*Math.exp(delta*.0012),r*1.75,75);
-  if(delta<0&&selected&&wantedDistance<=r*1.8){if(pendingEntry!==selected){pendingEntry=selected;pendingConfirmed=false}else pendingConfirmed=true;info(selected,'继续滚动进入 · 向外取消')}
+  if(delta<0&&selected&&wantedDistance<=r*1.8){if(pendingEntry!==selected){pendingEntry=selected;pendingConfirmed=false}else pendingConfirmed=true;info(selected,coarse?'继续放大进入 · 缩小取消':'继续滚动进入 · 向外取消',true)}
  }
  const canvas=renderer.domElement;canvas.addEventListener('wheel',e=>{e.preventDefault();const unit=e.deltaMode===1?16:e.deltaMode===2?innerHeight:1,over=pick(e.clientX,e.clientY);if(over!==hovered){hovered=over;canvas.style.cursor=over?'pointer':'grab';invalidateLabelLayout()}zoom(clamp(e.deltaY*unit,-240,240),e.clientX,e.clientY,true)},{passive:false});
  canvas.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'){ambientPointer.targetX=e.clientX/innerWidth*2-1;ambientPointer.targetY=e.clientY/innerHeight*2-1}});
  canvas.addEventListener('pointerleave',()=>{ambientPointer.targetX=0;ambientPointer.targetY=0});
- window.addEventListener('keydown',e=>{if(e.key==='Escape'&&(entry.work||pendingEntry)){cancelEntry();info(selected,'已取消进入')}});
+ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&(entry.work||pendingEntry)){e.stopImmediatePropagation();cancelEntry();info(selected,'已取消进入',true)}});
+ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panelOpen&&!entry.work&&!pendingEntry&&selected){resetCamera();toggle.focus()}});
+ focusEnter.addEventListener('click',()=>{if(selected)enter(selected)});
+ focusClose.addEventListener('click',()=>{resetCamera();toggle.focus()});
  const fingers=new Map();let drag=null,pinch=null,moved=false;canvas.addEventListener('pointerdown',e=>{cancelEntry();const work=pick(e.clientX,e.clientY);if(work)hovered=work;wantedYaw=yaw;wantedPitch=pitch;canvas.setPointerCapture(e.pointerId);fingers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(fingers.size===1){drag={x:e.clientX,y:e.clientY,work};moved=false}else if(fingers.size===2){const a=[...fingers.values()];pinch=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);moved=true}});
- canvas.addEventListener('pointermove',e=>{if(!fingers.has(e.pointerId)){if(entry.work)return;if(e.pointerType==='mouse'){hovered=pick(e.clientX,e.clientY);canvas.style.cursor=hovered?'pointer':'grab';info(hovered||selected,pendingEntry?'继续滚动进入 · 向外取消':hovered?'点击进入':'继续靠近进入')}return}const prev=fingers.get(e.pointerId);fingers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(fingers.size>=2){const a=[...fingers.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(pinch&&d>0)zoom(-Math.log(d/pinch)*830,(a[0].x+a[1].x)/2,(a[0].y+a[1].y)/2);pinch=d;moved=true}else if(drag){wantedYaw-=(e.clientX-prev.x)*.006;wantedPitch=clamp(wantedPitch+(e.clientY-prev.y)*.006,-1.5,1.5);if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>5)moved=true}});
- canvas.addEventListener('pointerup',e=>{if(fingers.size===1&&!moved&&drag)enter(drag.work||pick(e.clientX,e.clientY));fingers.delete(e.pointerId);pinch=null;if(fingers.size===1){const p=[...fingers.values()][0];drag={x:p.x,y:p.y,work:null};moved=true}else if(!fingers.size){drag=null;hovered=null}});canvas.addEventListener('pointercancel',e=>{fingers.delete(e.pointerId);drag=null;pinch=null;moved=true;hovered=null});canvas.addEventListener('pointerleave',()=>{if(!fingers.size&&!entry.work){hovered=null;info(selected)}});
+ canvas.addEventListener('pointermove',e=>{if(!fingers.has(e.pointerId)){if(entry.work)return;if(e.pointerType==='mouse'){hovered=pick(e.clientX,e.clientY);canvas.style.cursor=hovered?'pointer':'grab';info(selected||hovered,pendingEntry?(coarse?'继续放大进入 · 缩小取消':'继续滚动进入 · 向外取消'):selected?(coarse?'已选中 · 轻触进入或双指放大':'已选中 · 点击进入或继续靠近'):(coarse?'轻触进入':'点击进入'),!!selected)}return}const prev=fingers.get(e.pointerId);fingers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(fingers.size>=2){const a=[...fingers.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(pinch&&d>0)zoom(-Math.log(d/pinch)*830,(a[0].x+a[1].x)/2,(a[0].y+a[1].y)/2);pinch=d;moved=true}else if(drag){wantedYaw-=(e.clientX-prev.x)*.006;wantedPitch=clamp(wantedPitch+(e.clientY-prev.y)*.006,-1.5,1.5);if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>5)moved=true}});
+ canvas.addEventListener('pointerup',e=>{if(fingers.size===1&&!moved&&drag)enter(drag.work||pick(e.clientX,e.clientY));fingers.delete(e.pointerId);pinch=null;if(fingers.size===1){const p=[...fingers.values()][0];drag={x:p.x,y:p.y,work:null};moved=true}else if(!fingers.size){drag=null;hovered=null}});canvas.addEventListener('pointercancel',e=>{fingers.delete(e.pointerId);drag=null;pinch=null;moved=true;hovered=null});canvas.addEventListener('pointerleave',()=>{if(!fingers.size&&!entry.work){hovered=null;info(selected,selected?(coarse?'已选中 · 轻触进入或双指放大':'已选中 · 点击进入或继续靠近'):undefined,!!selected)}});
  window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();pixelRatio=Math.min(pixelRatio,Math.min(devicePixelRatio||1,2));renderer.setPixelRatio(pixelRatio);renderer.setSize(innerWidth,innerHeight);if(!selected){panoramaTarget();wantedDistance=panoramaDistance()}invalidateLabelLayout()});
  window.addEventListener('resize',()=>{nearStars.material.uniforms.pixelScale.value=renderer.getPixelRatio()});
  window.addEventListener('resize',()=>{dust.material.uniforms.pixelScale.value=renderer.getPixelRatio()});
  const occlusionSphere=new THREE.Sphere(),occlusionHit=new THREE.Vector3(),occlusionDirection=new THREE.Vector3(),labelProjection=new THREE.Vector3(),planetProjection=new THREE.Vector3();let lastFrame=0,frameId=0,motionTime=0,revealTime=0,lastLabelLayout=-Infinity,layoutDirty=true,qualityFrames=0,qualityTime=0;
- canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();if(frameId)cancelAnimationFrame(frameId);frameId=0;const error=document.getElementById('error');error.textContent='图形上下文丢失，正在尝试恢复…';error.style.display='block'});
- canvas.addEventListener('webglcontextrestored',()=>{const error=document.getElementById('error');error.style.display='none';lastFrame=0;if(!frameId)frameId=requestAnimationFrame(animate)});
+ canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();if(frameId)cancelAnimationFrame(frameId);frameId=0;errorText.textContent='图形上下文丢失，正在尝试恢复…';error.style.display='block'});
+ canvas.addEventListener('webglcontextrestored',()=>{error.style.display='none';lastFrame=0;if(!frameId)frameId=requestAnimationFrame(animate)});
  // 仅在尺寸、内容或可见状态变化时读取 DOM；动画帧复用几何与布局对象。
  const fixedBlocks=Array.from(document.querySelectorAll('.top,.guide,.focus,.panel'),element=>({element,left:0,right:0,top:0,bottom:0,visible:false}));
- const layoutItems=works.map(w=>({w,o:byWork.get(w),x:0,y:0,planetX:0,planetY:0,r:0,z:0,dist:0,priority:0,width:0,height:0,visible:false})),candidates=[],occupied=works.map(()=>({left:0,right:0,top:0,bottom:0}));
+ const layoutItems=works.map(w=>({w,o:byWork.get(w),x:0,y:0,planetX:0,planetY:0,r:0,z:0,dist:0,priority:0,width:0,height:0,visible:false,above:false})),candidates=[],occupied=works.map(()=>({left:0,right:0,top:0,bottom:0}));
  for(const item of layoutItems){item.o.label.style.display='block';item.o.label.style.visibility='hidden'}
  invalidateLabelLayout=()=>{layoutDirty=true};
  function measureLayout(){
@@ -240,13 +258,13 @@ try{
   if(!layoutDirty&&now-lastLabelLayout<1000/30)return;
   if(layoutDirty)measureLayout();lastLabelLayout=now;candidates.length=0;
   const scale=innerHeight/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2)));
-  for(const item of layoutItems){const o=item.o;item.visible=false;item.dist=camera.position.distanceTo(o.root.position);planetProjection.copy(o.root.position).project(camera);item.planetX=(planetProjection.x+1)*innerWidth/2;item.planetY=(1-planetProjection.y)*innerHeight/2;item.z=planetProjection.z;item.r=o.radius*scale/Math.max(item.dist,.1);labelProjection.copy(o.root.position);labelProjection.y-=o.radius*1.35;labelProjection.project(camera);if(labelProjection.z>=1||labelProjection.z<=-1||Math.abs(labelProjection.x)>=1.08||Math.abs(labelProjection.y)>=1.08||item.dist<=o.radius*2.6)continue;
+  for(const item of layoutItems){const o=item.o;item.visible=false;item.dist=camera.position.distanceTo(o.root.position);planetProjection.copy(o.root.position).project(camera);item.planetX=(planetProjection.x+1)*innerWidth/2;item.planetY=(1-planetProjection.y)*innerHeight/2;item.z=planetProjection.z;item.r=o.radius*scale/Math.max(item.dist,.1);if(item.w===selected)continue;labelProjection.copy(o.root.position);labelProjection.y-=o.radius*1.35;labelProjection.project(camera);if(labelProjection.z>=1||labelProjection.z<=-1||Math.abs(labelProjection.x)>=1.08||Math.abs(labelProjection.y)>=1.08||item.dist<=o.radius*2.6)continue;
    raycaster.set(camera.position,occlusionDirection.copy(o.root.position).sub(camera.position).normalize());let blocked=false;for(const other of layoutItems){if(other===item)continue;const b=other.o;occlusionSphere.center.copy(b.root.position);occlusionSphere.radius=b.radius;if(raycaster.ray.intersectSphere(occlusionSphere,occlusionHit)&&camera.position.distanceToSquared(occlusionHit)<(item.dist-o.radius)*(item.dist-o.radius)){blocked=true;break}}if(blocked)continue;
    item.x=(labelProjection.x+1)*innerWidth/2;item.y=(1-labelProjection.y)*innerHeight/2;item.priority=(item.w===selected?2:0)+(item.w===hovered?1:0);candidates.push(item);
   }
   candidates.sort(candidateOrder);let occupiedCount=0;
-  for(const item of candidates){if(item.width>innerWidth-16)continue;const x=clamp(item.x,item.width/2+8,innerWidth-item.width/2-8);let y=placeLabel(item,x,item.y,true,occupiedCount);if(!Number.isFinite(y))y=placeLabel(item,x,item.planetY-item.r-item.height-10,false,occupiedCount);if(!Number.isFinite(y))continue;item.visible=true;const box=occupied[occupiedCount++];box.left=x-item.width/2;box.right=x+item.width/2;box.top=y;box.bottom=y+item.height;if(item.o.labelX!==x){item.o.label.style.left=x+'px';item.o.labelX=x}if(item.o.labelY!==y){item.o.label.style.top=y+'px';item.o.labelY=y}}
-  for(const item of layoutItems){if(item.o.labelVisible!==item.visible){item.o.label.style.visibility=item.visible?'visible':'hidden';item.o.labelVisible=item.visible}}
+  for(const item of candidates){if(item.width>innerWidth-16)continue;const x=clamp(item.x,item.width/2+8,innerWidth-item.width/2-8);let y=placeLabel(item,x,item.y,true,occupiedCount);item.above=!Number.isFinite(y);if(item.above)y=placeLabel(item,x,item.planetY-item.r-item.height-10,false,occupiedCount);if(!Number.isFinite(y))continue;item.visible=true;const box=occupied[occupiedCount++];box.left=x-item.width/2;box.right=x+item.width/2;box.top=y;box.bottom=y+item.height;if(item.o.labelX!==x){item.o.label.style.left=x+'px';item.o.labelX=x}if(item.o.labelY!==y){item.o.label.style.top=y+'px';item.o.labelY=y}}
+  for(const item of layoutItems){if(item.o.labelVisible!==item.visible){item.o.label.style.visibility=item.visible?'visible':'hidden';item.o.labelVisible=item.visible}const above=!!item.visible&&item.above;if(item.o.labelAbove!==above){item.o.label.classList.toggle('above',above);item.o.labelAbove=above;invalidateLabelLayout()}}
  }
  function animate(now){
   frameId=0;if(document.hidden)return;
@@ -321,7 +339,7 @@ try{
  positionCamera();scene.updateMatrixWorld();renderer.render(scene,camera);lastFrame=performance.now();setSceneReady(true);frameId=requestAnimationFrame(animate);
  const hashWork=/^#work-(\d+)$/.exec(location.hash);if(hashWork){const hashSelection=works[Number(hashWork[1])-1];if(hashSelection)selectPlanet(hashSelection)}
  window.addEventListener('hashchange',()=>{const match=/^#work-(\d+)$/.exec(location.hash),work=match?works[Number(match[1])-1]:null;if(work){if(work!==selected)selectPlanet(work)}else if(selected)resetCamera()});
-}catch(err){setSceneReady(false);console.error(err);const boot=document.getElementById('boot');if(boot)boot.hidden=true;const error=document.getElementById('error');error.textContent=err.message==='作品数据未加载'?'作品数据未加载：请确认 作品数据.js 与展厅在同一目录。':err.message==='Three.js 未加载'?'三维库未加载：请确认 three.min.js 与展厅在同一目录。':'三维场景不可用，请从作品目录进入。';error.style.display='block'}
+}catch(err){setSceneReady(false);console.error(err);const boot=document.getElementById('boot');if(boot)boot.hidden=true;errorText.textContent=err.message==='作品数据未加载'?'作品数据未加载：请确认 作品数据.js 与展厅在同一目录。':err.message==='Three.js 未加载'?'三维库未加载：请确认 three.min.js 与展厅在同一目录。':'三维场景不可用，请从作品目录进入。';error.style.display='block'}
 }
 requestAnimationFrame(()=>setTimeout(startScene,0));
 })();

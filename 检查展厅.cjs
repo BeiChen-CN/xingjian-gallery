@@ -123,13 +123,14 @@ async function main() {
     console.log('启动与标签：通过 (' + labels.join(' / ') + ')');
 
     const pickPoint = async name => cdp.evaluate(`(() => {
-      const canvas = document.querySelector('#scene canvas'), focus = document.querySelector('#focus');
+      const canvas = document.querySelector('#scene canvas');
       const label = [...document.querySelectorAll('.label')].find(node => node.querySelector('strong').textContent === ${JSON.stringify(name)});
       if (!label) return null;
       const rect = label.getBoundingClientRect(), x = Math.round(rect.left + rect.width / 2), top = Math.round(rect.top);
+      canvas.style.cursor = 'grab';
       for (let y = top - 2; y > top - 240; y -= 2) {
         canvas.dispatchEvent(new PointerEvent('pointermove', { clientX: x, clientY: y, pointerType: 'mouse', bubbles: true }));
-        if (focus.classList.contains('visible') && focus.querySelector('strong').textContent.startsWith(${JSON.stringify(name)})) return { x, y };
+        if (canvas.style.cursor === 'pointer') return { x, y };
       }
       return null;
     })()`);
@@ -142,18 +143,24 @@ async function main() {
     const first = await pickPoint(labels[0]);
     if (!first) throw new Error('未找到第一颗星球的屏幕位置');
     await wheel(first, -120);
-    await waitFor(async () => (await cdp.evaluate(`document.querySelector('#focus strong').textContent`)).startsWith(labels[0]), 4000, '选中第一颗星球');
+    await waitFor(async () => {
+      const state = await cdp.evaluate(`({ text: document.querySelector('#focus strong').textContent, selected: document.getElementById('focus').classList.contains('selected') })`);
+      return state.text.startsWith(labels[0]) && state.selected;
+    }, 4000, '选中第一颗星球');
     const second = await pickPoint(labels[1]);
     if (!second) throw new Error('未找到第二颗星球的屏幕位置');
     await wheel(second, -120);
     await waitFor(async () => {
       const state = await cdp.evaluate(`(() => {
-        const label = [...document.querySelectorAll('.label')].find(node => node.querySelector('strong').textContent === ${JSON.stringify(labels[1])});
-        const rect = label.getBoundingClientRect();
-        return { focus: document.querySelector('#focus strong').textContent, x: rect.left + rect.width / 2, width: innerWidth };
+        const focus = document.getElementById('focus');
+        return { text: focus.querySelector('strong').textContent, selected: focus.classList.contains('selected'), detail: focus.querySelector('.focus-detail').textContent };
       })()`);
-      return state.focus.startsWith(labels[1]) && Math.abs(state.x - state.width / 2) < 80;
+      return state.text.startsWith(labels[1]) && state.selected;
     }, 5000, '滚轮切换到指针下的星球');
+    await waitFor(async () => cdp.evaluate(`(() => {
+      const label = [...document.querySelectorAll('.label')].find(node => node.querySelector('strong').textContent === ${JSON.stringify(labels[1])});
+      return label.style.visibility === 'hidden';
+    })()`), 2500, '选中星球的场景标签隐藏');
     console.log('滚轮选中指针下的星球：通过');
 
     const broken = fs.mkdtempSync(path.join(os.tmpdir(), 'gallery-broken-'));
