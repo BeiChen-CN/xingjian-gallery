@@ -120,7 +120,17 @@ async function main() {
     }, 30000, '展厅启动');
     const labels = await cdp.evaluate(`[...document.querySelectorAll('.label strong')].map(node => node.textContent)`);
     if (labels.length !== 4) throw new Error('标签数量应为 4，实际 ' + labels.length);
+    const ui = await cdp.evaluate(`({
+      searchHidden: document.getElementById('search').hidden,
+      share: !!document.getElementById('share'),
+      help: !!document.getElementById('help'),
+      present: !!document.getElementById('present'),
+      prev: !!document.getElementById('prev'),
+      next: !!document.getElementById('next')
+    })`);
+    if (!ui.searchHidden || !ui.share || !ui.help || !ui.present || !ui.prev || !ui.next) throw new Error('新增控件缺失：' + JSON.stringify(ui));
     console.log('启动与标签：通过 (' + labels.join(' / ') + ')');
+    const click = selector => cdp.evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`);
 
     const pickPoint = async name => cdp.evaluate(`(() => {
       const canvas = document.querySelector('#scene canvas');
@@ -146,9 +156,9 @@ async function main() {
     await waitFor(async () => {
       const state = await cdp.evaluate(`(() => {
         const label = [...document.querySelectorAll('.label')].find(node => node.querySelector('strong').textContent === ${JSON.stringify(labels[0])});
-        return { hash: location.hash, visible: label.style.visibility !== 'hidden' };
+        return { hash: location.hash, visible: label.style.visibility !== 'hidden', selected: label.classList.contains('selected') };
       })()`);
-      return state.hash === '#work-1' && state.visible;
+      return state.hash === '#work-1' && state.visible && state.selected;
     }, 4000, '选中第一颗星球');
     const second = await pickPoint(labels[1]);
     if (!second) throw new Error('未找到第二颗星球的屏幕位置');
@@ -156,11 +166,39 @@ async function main() {
     await waitFor(async () => {
       const state = await cdp.evaluate(`(() => {
         const label = [...document.querySelectorAll('.label')].find(node => node.querySelector('strong').textContent === ${JSON.stringify(labels[1])});
-        return { hash: location.hash, visible: label.style.visibility !== 'hidden', active: label.classList.contains('active') };
+        return { hash: location.hash, visible: label.style.visibility !== 'hidden', active: label.classList.contains('active'), selected: label.classList.contains('selected') };
       })()`);
-      return state.hash === '#work-2' && state.visible && state.active;
+      return state.hash === '#work-2' && state.visible && state.active && state.selected;
     }, 5000, '滚轮切换到指针下的星球');
     console.log('滚轮选中指针下的星球：通过');
+
+    await click('#toggle');
+    await sleep(350);
+    const panel = await cdp.evaluate(`({ hidden: document.getElementById('panel').hidden, searchHidden: document.getElementById('search').hidden })`);
+    if (panel.hidden || !panel.searchHidden) throw new Error('目录或搜索隐藏状态异常');
+    await click('#share');
+    await sleep(300);
+    const toast = await cdp.evaluate(`({ visible: document.getElementById('toast').classList.contains('visible'), text: document.getElementById('toast').textContent })`);
+    if (!toast.visible) throw new Error('复制链接没有可见反馈：' + JSON.stringify(toast));
+    await click('#help-open');
+    await sleep(250);
+    if (!(await cdp.evaluate(`document.getElementById('help').open`))) throw new Error('操作说明没有打开');
+    await click('#help-close');
+    await sleep(200);
+    if (await cdp.evaluate(`document.getElementById('help').open`)) throw new Error('操作说明没有关闭');
+    await click('#panel-close');
+    await sleep(350);
+    await click('#present');
+    await sleep(350);
+    if (!(await cdp.evaluate(`document.body.classList.contains('presentation')`))) throw new Error('展示模式没有进入');
+    await click('#present');
+    await sleep(350);
+    if (await cdp.evaluate(`document.body.classList.contains('presentation')`)) throw new Error('展示模式没有退出');
+    await click('#next');
+    await sleep(900);
+    const edge = await cdp.evaluate(`({ hash: location.hash, selected: document.querySelectorAll('.label.selected').length })`);
+    if (edge.hash !== '#work-3' || edge.selected !== 1) throw new Error('边缘箭头没有切换作品：' + JSON.stringify(edge));
+    console.log('分享、帮助、展示与边缘箭头：通过');
 
     const broken = fs.mkdtempSync(path.join(os.tmpdir(), 'gallery-broken-'));
     cleanup.push(() => fs.rmSync(broken, { recursive: true, force: true }));
