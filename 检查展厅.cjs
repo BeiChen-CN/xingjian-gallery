@@ -198,7 +198,13 @@ async function main() {
     await sleep(900);
     const edge = await cdp.evaluate(`({ hash: location.hash, selected: document.querySelectorAll('.label.selected').length })`);
     if (edge.hash !== '#work-3' || edge.selected !== 1) throw new Error('边缘箭头没有切换作品：' + JSON.stringify(edge));
-    console.log('分享、帮助、展示与边缘箭头：通过');
+    await click('#toggle');
+    await sleep(300);
+    await click('#tour');
+    await sleep(700);
+    const tour = await cdp.evaluate(`({ hash: location.hash, directoryOpen: document.body.classList.contains('directory-open'), toast: document.getElementById('toast').textContent })`);
+    if (tour.hash !== '#work-4' || tour.directoryOpen || !tour.toast.includes('巡游')) throw new Error('自动巡游没有启动：' + JSON.stringify(tour));
+    console.log('分享、帮助、展示、边缘箭头与巡游：通过');
 
     const broken = fs.mkdtempSync(path.join(os.tmpdir(), 'gallery-broken-'));
     cleanup.push(() => fs.rmSync(broken, { recursive: true, force: true }));
