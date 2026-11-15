@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html data-page-node-id="qIC2puVU41NdQqJZ5I67fN" lang="zh-CN">
+<head data-page-node-id="5fvLrqXs6pRDbRhrKaaRLE">
+<meta data-page-node-id="xme5d4ZDTFk22H52hxomE4" charset="UTF-8">
+<meta data-page-node-id="fKf5X9A3YBab2UKRtrdBxQ" content="width=device-width, initial-scale=1.0" name="viewport">
+<title data-page-node-id="HYQkWoKU7x9PYtUMgu0C03" data-pnid-children="h3zIOV1i3z6Se6Uo0PtfCq">靳璐瑶 · 深夜档案</title>
+<style data-page-node-id="KmIjjSRu3xWr5fWoPEZ73L" data-pnid-children="h2LPNhfGPKgLlk4CTRVW5R">
+  :root{
+    --bg:#08060D;
+    --bg2:#0E0A17;
+    --ink:#F4F1EA;
+    --dim:#8A85A0;
+    --lime:#CDFF4F;
+    --pink:#FF5DA2;
+    --orange:#FF9A3D;
+    --cyan:#6EE7F9;
+    --violet:#A96BFF;
+    --line:rgba(255,255,255,.12);
+    --glass:rgba(255,255,255,.045);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.75;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+    --mx:50%;--my:30%;
+  }
+  /* 光斑氛围 */
+  .orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55}
+  .o1{width:620px;height:620px;background:radial-gradient(circle,#FF5DA2,transparent 66%);top:-220px;left:-160px;animation:drift 22s ease-in-out infinite}
+  .o2{width:560px;height:560px;background:radial-gradient(circle,#5B3BFF,transparent 66%);top:6%;right:-220px;animation:drift 26s ease-in-out infinite reverse}
+  .o3{width:520px;height:520px;background:radial-gradient(circle,#0E8E9E,transparent 68%);bottom:-180px;left:20%;animation:drift 30s ease-in-out infinite}
+  .o4{width:420px;height:420px;background:radial-gradient(circle,#FF9A3D,transparent 66%);top:44%;left:-180px;opacity:.32;animation:drift 24s ease-in-out infinite reverse}
+  @keyframes drift{
+    0%,100%{transform:translate(0,0) scale(1)}
+    50%{transform:translate(50px,-60px) scale(1.12)}
+  }
+  /* 颗粒 */
+  .grain{
+    position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.22;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+  }
+  /* 鼠标聚光 */
+  .spot{
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(420px circle at var(--mx) var(--my),rgba(255,255,255,.055),transparent 70%);
+  }
+  /* 暗角 */
+  .vig{position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:radial-gradient(120% 80% at 50% 0%,transparent 40%,rgba(0,0,0,.55) 100%)}
+
+  .wrap{position:relative;z-index:5;max-width:1060px;margin:0 auto;padding:0 24px}
+
+  /* ===== 顶部细线跑马灯 ===== */
+  .ticker{
+    position:relative;z-index:6;border-bottom:1px solid var(--line);
+    font-family:ui-monospace,'SF Mono',Consolas,monospace;
+    font-size:11px;letter-spacing:2px;color:var(--dim);
+    overflow:hidden;white-space:nowrap;padding:9px 0;
+    background:rgba(8,6,13,.6);backdrop-filter:blur(12px);
+  }
+  .ticker .mv{display:inline-block;animation:mv 34s linear infinite}
+  .ticker span{margin-right:36px}
+  .ticker b{color:var(--lime);font-weight:600}
+  .ticker em{font-style:normal;color:var(--pink)}
+  @keyframes mv{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ===== 导航 ===== */
+  nav{
+    position:sticky;top:0;z-index:20;
+    background:rgba(8,6,13,.55);backdrop-filter:blur(18px) saturate(1.3);
+    border-bottom:1px solid var(--line);
+  }
+  nav .in{max-width:1060px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:10px}
+  .brand{font-size:12px;font-weight:700;letter-spacing:3px;font-family:ui-monospace,monospace}
+  .brand i{color:var(--lime);font-style:normal}
+  .navlinks{margin-left:auto;display:flex;gap:26px;font-size:12.5px}
+  .navlinks a{color:var(--dim);text-decoration:none;transition:.2s;position:relative}
+  .navlinks a:hover{color:var(--ink)}
+  .navlinks a::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:1px;background:var(--lime);transition:.25s}
+  .navlinks a:hover::after{width:100%}
+  .fee{
+    margin-left:22px;font-family:ui-monospace,monospace;font-size:11px;
+    border:1px solid rgba(205,255,79,.4);color:var(--lime);
+    padding:4px 10px;border-radius:100px;background:rgba(205,255,79,.07);
+  }
+
+  /* ===== HERO ===== */
+  .hero{
+    min-height:88vh;display:grid;grid-template-columns:1.12fr .88fr;
+    gap:40px;align-items:center;padding:60px 0 40px;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:ui-monospace,monospace;font-size:11px;letter-spacing:2px;
+    color:var(--dim);border:1px solid var(--line);border-radius:100px;
+    padding:6px 14px;background:rgba(255,255,255,.03);margin-bottom:26px;
+  }
+  .eyebrow b{color:var(--lime);font-weight:600}
+  .dotlive{width:6px;height:6px;border-radius:50%;background:var(--lime);
+    box-shadow:0 0 0 4px rgba(205,255,79,.16);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  h1{
+    font-size:clamp(64px,11.5vw,128px);line-height:.98;font-weight:900;
+    letter-spacing:-5px;margin-bottom:16px;
+  }
+  h1 span{
+    display:inline-block;
+    background:linear-gradient(100deg,#FFF 0%,#FFD9A8 24%,#FF5DA2 52%,#A96BFF 76%,#6EE7F9 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 6px 26px rgba(255,93,162,.28));
+  }
+  h1 span:nth-child(2){transform:translateY(-6px)}
+  h1 span:nth-child(3){transform:translateY(2px)}
+  h1 .dot{
+    font-size:.5em;vertical-align:super;
+    background:linear-gradient(120deg,var(--lime),var(--cyan));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lede{font-size:clamp(19px,2.3vw,24px);font-weight:600;line-height:1.75;color:#DAD5E6}
+  .lede b{
+    color:var(--lime);font-weight:700;
+    text-shadow:0 0 24px rgba(205,255,79,.35);
+  }
+  .lede2{
+    font-family:ui-monospace,monospace;font-size:11.5px;letter-spacing:1px;
+    color:#6E6885;margin-top:14px;line-height:1.9;
+  }
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+  .tag{
+    font-size:12px;padding:6px 14px;border-radius:100px;
+    border:1px solid var(--line);background:rgba(255,255,255,.04);
+    color:#CFC9DC;backdrop-filter:blur(6px);transition:.22s;
+  }
+  .tag:hover{border-color:rgba(205,255,79,.45);color:#fff;background:rgba(205,255,79,.08);transform:translateY(-2px)}
+  .tag.hot{border-color:rgba(255,93,162,.45);color:#FFC0D8;background:rgba(255,93,162,.1)}
+
+  .scrollhint{
+    margin-top:38px;font-family:ui-monospace,monospace;font-size:11px;
+    color:#5D5872;letter-spacing:1.5px;display:flex;align-items:center;gap:8px;
+  }
+  .scrollhint i{
+    width:18px;height:30px;border:1px solid #4A4560;border-radius:10px;position:relative;display:block;
+  }
+  .scrollhint i::after{
+    content:"";position:absolute;left:50%;top:6px;width:3px;height:6px;border-radius:2px;
+    background:var(--lime);transform:translateX(-50%);animation:drop 1.8s infinite;
+  }
+  @keyframes drop{0%{opacity:0;transform:translate(-50%,0)}30%{opacity:1}100%{opacity:0;transform:translate(-50%,12px)}}
+
+  /* 右侧徽章 + 卡 */
+  .heroR{display:flex;flex-direction:column;align-items:center;gap:22px}
+  .badge{width:260px;height:260px;position:relative}
+  .badge .ring{animation:spin 26s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .badge .core{
+    position:absolute;inset:0;display:grid;place-items:center;text-align:center;
+  }
+  .badge .core b{
+    display:block;font-size:52px;font-weight:900;line-height:1;letter-spacing:-2px;
+    background:linear-gradient(140deg,#fff,var(--lime));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 22px rgba(205,255,79,.3));
+  }
+  .badge .core small{
+    display:block;font-family:ui-monospace,monospace;font-size:9.5px;
+    letter-spacing:3px;color:#7A7590;margin-top:7px;
+  }
+  .idcard{
+    width:100%;max-width:300px;
+    background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+    border:1px solid var(--line);border-radius:18px;padding:14px 16px 12px;
+    backdrop-filter:blur(14px);
+    box-shadow:0 26px 60px -32px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.1);
+    transform:rotate(-2deg);
+  }
+  .idcard .ph{
+    height:74px;border-radius:10px;border:1px dashed rgba(255,255,255,.18);
+    display:grid;place-items:center;text-align:center;line-height:1.6;
+    font-family:ui-monospace,monospace;font-size:10px;color:#6E6885;
+    background:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 6px,transparent 6px 12px);
+  }
+  .idcard dl{margin-top:12px;font-size:11.5px;font-family:ui-monospace,monospace}
+  .idcard dl div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+  .idcard dl div:last-child{border-bottom:none}
+  .idcard dt{color:#77728C;letter-spacing:1px}
+  .idcard dd{color:#EDE9F5;font-weight:600}
+  .idcard dd.hot{color:var(--lime)}
+
+  /* ===== 板块 ===== */
+  section{padding:72px 0;position:relative}
+  .shead{margin-bottom:34px;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+  .shead .no{
+    font-family:ui-monospace,monospace;font-size:11px;color:var(--lime);
+    letter-spacing:2px;padding-bottom:6px;
+  }
+  .shead h2{font-size:clamp(26px,3.6vw,38px);font-weight:900;letter-spacing:-1.2px;line-height:1.2}
+  .shead .en{
+    font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:2.5px;
+    color:#5C5770;padding-bottom:8px;margin-left:auto;
+  }
+  .hrline{height:1px;background:linear-gradient(90deg,rgba(255,255,255,.16),rgba(255,255,255,0));margin-bottom:34px}
+
+  /* 性格 */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .pcard{
+    position:relative;padding:26px 26px 24px;border-radius:20px;
+    background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015));
+    border:1px solid var(--line);backdrop-filter:blur(12px);
+    transition:transform .3s cubic-bezier(.2,.9,.2,1),border-color .3s,box-shadow .3s;
+    overflow:hidden;
+  }
+  .pcard::before{
+    content:"";position:absolute;top:0;left:0;width:100%;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+  }
+  .pcard::after{
+    content:"";position:absolute;width:180px;height:180px;border-radius:50%;
+    right:-70px;top:-70px;filter:blur(50px);opacity:.5;transition:.4s;
+  }
+  .pcard:nth-child(1)::after{background:var(--pink)}
+  .pcard:nth-child(2)::after{background:var(--cyan)}
+  .pcard:nth-child(3)::after{background:var(--orange)}
+  .pcard:nth-child(4)::after{background:var(--lime)}
+  .pcard:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.25);box-shadow:0 30px 60px -40px rgba(255,255,255,.3)}
+  .pcard:hover::after{opacity:.75}
+  .pcard .idx{
+    font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:2px;
+    color:#7E7894;margin-bottom:14px;display:block;
+  }
+  .pcard h3{font-size:21px;font-weight:800;letter-spacing:-.4px;margin-bottom:10px;line-height:1.4}
+  .pcard h3 u{text-decoration:none;border-bottom:1.5px solid rgba(205,255,79,.5);padding-bottom:2px}
+  .pcard p{font-size:14px;color:#B9B3C9;line-height:1.9;position:relative;z-index:2}
+  .pcard .note{
+    margin-top:14px;font-family:ui-monospace,monospace;font-size:10.5px;
+    letter-spacing:1px;color:var(--pink);position:relative;z-index:2;
+  }
+
+  /* 参数 */
+  .spec{
+    border:1px solid var(--line);border-radius:20px;overflow:hidden;
+    background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.012));
+    backdrop-filter:blur(10px);
+  }
+  .spec .top{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:14px 22px;border-bottom:1px solid var(--line);
+    font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:2px;color:#7E7894;
+  }
+  .spec .top em{font-style:normal;color:var(--lime)}
+  .srow{
+    display:grid;grid-template-columns:150px 1fr;gap:18px;
+    padding:15px 22px;border-bottom:1px solid rgba(255,255,255,.06);
+    font-size:14px;transition:.2s;
+  }
+  .srow:hover{background:rgba(255,255,255,.035)}
+  .srow:last-child{border-bottom:none}
+  .srow span{
+    font-family:ui-monospace,monospace;font-size:11px;letter-spacing:1.5px;
+    color:#77728C;padding-top:3px;
+  }
+  .srow b{font-weight:600;color:#EDE9F5;letter-spacing:.2px}
+  .srow b.warn{color:var(--pink)}
+
+  /* 爱好 */
+  .hobbies{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .hobby{
+    padding:22px 20px;border-radius:18px;
+    background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09);
+    transition:.28s cubic-bezier(.2,.9,.2,1);position:relative;overflow:hidden;
+  }
+  .hobby:hover{background:rgba(255,255,255,.07);transform:translateY(-4px);border-color:rgba(205,255,79,.35)}
+  .hobby .num{
+    font-family:ui-monospace,monospace;font-size:10px;color:#575269;
+    letter-spacing:1px;display:block;margin-bottom:12px;
+  }
+  .hobby h4{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:-.2px}
+  .hobby .stars{font-size:10px;letter-spacing:2px;color:var(--lime);margin-bottom:9px;display:block}
+  .hobby p{font-size:12.5px;color:#9E98B0;line-height:1.85}
+
+  /* 状态 */
+  .bars{display:grid;gap:26px;border:1px solid var(--line);border-radius:20px;padding:30px 26px;background:rgba(255,255,255,.025);backdrop-filter:blur(10px)}
+  .bar .lab{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  .bar .lab strong{font-size:14px;font-weight:700;letter-spacing:.3px}
+  .bar .lab em{font-style:normal;font-family:ui-monospace,monospace;font-size:11px;color:#7E7894;letter-spacing:.5px}
+  .track{height:8px;border-radius:100px;background:rgba(255,255,255,.07);overflow:hidden;position:relative}
+  .fill{
+    height:100%;width:0;border-radius:100px;
+    transition:width 1.6s cubic-bezier(.2,.9,.2,1);position:relative;
+  }
+  .fill::after{
+    content:"";position:absolute;right:0;top:0;bottom:0;width:26px;
+    background:linear-gradient(90deg,transparent,#fff);
+    opacity:.75;filter:blur(1px);
+  }
+  .fill.y{background:linear-gradient(90deg,#8CBF1F,var(--lime));box-shadow:0 0 18px rgba(205,255,79,.5)}
+  .fill.p{background:linear-gradient(90deg,#B32463,var(--pink));box-shadow:0 0 18px rgba(255,93,162,.5)}
+  .fill.c{background:linear-gradient(90deg,#1B7C93,var(--cyan));box-shadow:0 0 18px rgba(110,231,249,.45)}
+  .bar .cap{font-size:11.5px;color:#77728C;margin-top:9px}
+
+  /* 傲慢 */
+  .sin{position:relative;border-radius:26px;overflow:hidden;border:1px solid rgba(255,93,162,.25);
+    background:
+      radial-gradient(120% 130% at 10% 0%,rgba(255,93,162,.18),transparent 55%),
+      radial-gradient(100% 120% at 90% 100%,rgba(169,107,255,.16),transparent 55%),
+      linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.01));
+    backdrop-filter:blur(12px);
+    padding:46px 40px 44px;
+  }
+  .sin .lab{
+    font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:3px;
+    color:var(--pink);margin-bottom:16px;
+  }
+  .sin h2{
+    font-size:clamp(58px,11vw,110px);font-weight:900;line-height:1;letter-spacing:-4px;
+    margin-bottom:20px;position:relative;z-index:2;
+    background:linear-gradient(120deg,#fff 0%,#FFD9E8 40%,#FF5DA2 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 40px rgba(255,93,162,.25));
+  }
+  .sin h2 small{
+    font-size:12px;letter-spacing:4px;color:#8B8098;font-weight:500;
+    margin-left:16px;vertical-align:middle;font-family:ui-monospace,monospace;
+    -webkit-text-fill-color:#8B8098;
+  }
+  .sin p{font-size:15px;color:#C6C0D4;max-width:620px;position:relative;z-index:2;line-height:1.95}
+  .sin p+p{margin-top:12px}
+  .sin b{color:var(--lime);font-weight:700}
+  .sin .quote{
+    display:inline-block;margin-top:26px;font-size:clamp(18px,2.4vw,23px);font-weight:800;
+    letter-spacing:.5px;position:relative;z-index:2;
+    padding-left:18px;border-left:3px solid var(--pink);
+    background:linear-gradient(120deg,#fff,#FFC0D8);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .sin .seal{
+    position:absolute;right:26px;bottom:-30px;font-size:210px;font-weight:900;
+    color:rgba(255,93,162,.07);line-height:1;user-select:none;
+    border:3px solid rgba(255,93,162,.1);border-radius:50%;
+    width:220px;height:220px;display:grid;place-items:center;transform:rotate(-12deg);
+  }
+
+  /* 荣誉 */
+  .awards{border-top:1px solid var(--line)}
+  .award{
+    display:grid;grid-template-columns:70px 1fr 190px;gap:22px;
+    padding:26px 4px;border-bottom:1px solid rgba(255,255,255,.08);
+    align-items:start;transition:.25s;
+  }
+  .award:hover{background:linear-gradient(90deg,rgba(255,255,255,.04),transparent)}
+  .award .no{
+    font-family:ui-monospace,monospace;font-size:11px;color:#5C5770;letter-spacing:1px;padding-top:6px;
+  }
+  .award h4{font-size:19px;font-weight:800;letter-spacing:-.3px;margin-bottom:7px}
+  .award .sub{font-size:12.5px;color:#8A85A0}
+  .award .rm{font-size:12.5px;color:#B9B3C9;line-height:1.9;text-align:right}
+  .award .rm i{display:block;font-family:ui-monospace,monospace;font-size:10px;color:#5C5770;font-style:normal;letter-spacing:1px;margin-bottom:4px}
+  .award .tagA{
+    display:inline-block;font-size:10px;font-family:ui-monospace,monospace;
+    letter-spacing:1.5px;color:var(--lime);border:1px solid rgba(205,255,79,.35);
+    border-radius:100px;padding:2px 9px;margin-bottom:8px;
+  }
+
+  /* 付费 */
+  .pay{
+    display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:center;
+    border:1px solid rgba(205,255,79,.28);border-radius:26px;padding:40px 38px;
+    background:
+      radial-gradient(100% 120% at 0% 0%,rgba(205,255,79,.14),transparent 58%),
+      linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.012));
+    backdrop-filter:blur(12px);
+    box-shadow:0 40px 90px -60px rgba(205,255,79,.5);
+  }
+  .pay h2{font-size:clamp(28px,4.4vw,42px);font-weight:900;letter-spacing:-1.5px;line-height:1.25}
+  .price{
+    display:flex;align-items:baseline;gap:9px;margin:16px 0 6px;
+  }
+  .price b{
+    font-size:clamp(54px,8vw,76px);font-weight:900;letter-spacing:-4px;line-height:1;
+    background:linear-gradient(140deg,#fff 0%,var(--lime) 70%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 26px rgba(205,255,79,.35));
+  }
+  .price span{font-family:ui-monospace,monospace;font-size:12px;color:#8A85A0;letter-spacing:1.5px}
+  .pay p{font-size:13.5px;color:#B4AEC5;line-height:1.95;margin-top:10px;max-width:430px}
+  .btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+  button{
+    font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;
+    border-radius:100px;padding:13px 24px;transition:.25s cubic-bezier(.2,.9,.2,1);
+  }
+  .btn-main{
+    background:linear-gradient(120deg,var(--lime),#9BE82F);color:#0A0A08;border:none;
+    box-shadow:0 14px 40px -14px rgba(205,255,79,.65);
+  }
+  .btn-main:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 20px 50px -14px rgba(205,255,79,.8)}
+  .btn-ghost{
+    background:rgba(255,255,255,.04);color:#E8E4F0;
+    border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px);
+  }
+  .btn-ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.35);transform:translateY(-3px)}
+
+  .qr{
+    background:rgba(255,255,255,.05);border:1px solid var(--line);
+    border-radius:20px;padding:12px;transform:rotate(2deg);
+    box-shadow:0 30px 70px -40px #000;
+  }
+  .qrbox{
+    aspect-ratio:1;border-radius:12px;overflow:hidden;
+    border:1px solid rgba(255,255,255,.12);
+    background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.01));
+  }
+  .qrbox img{
+    width:100%;height:100%;object-fit:cover;object-position:50% 22%;
+    display:block;transition:transform .5s cubic-bezier(.2,.9,.2,1);
+  }
+  .qr:hover .qrbox img{transform:scale(1.06)}
+  .qr .cap{
+    font-family:ui-monospace,monospace;font-size:10px;letter-spacing:1px;
+    color:#77728C;text-align:center;margin-top:10px;line-height:1.7;
+  }
+
+  footer{
+    padding:44px 0 60px;border-top:1px solid var(--line);margin-top:40px;
+    display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:1px;color:#5C5770;
+  }
+  footer b{color:#A9A3BB;font-weight:500}
+  footer .dots{display:flex;gap:6px;align-items:center}
+  footer .dots i{width:6px;height:6px;border-radius:50%;display:block}
+
+  /* ===== 音乐播放器 ===== */
+  .player{
+    position:fixed;right:22px;bottom:22px;z-index:70;
+    display:flex;align-items:center;gap:11px;
+    padding:9px 17px 9px 9px;border-radius:100px;
+    background:rgba(14,10,23,.8);
+    backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid rgba(255,255,255,.16);
+    box-shadow:0 20px 50px -22px #000, inset 0 1px 0 rgba(255,255,255,.12);
+    cursor:pointer;overflow:hidden;
+    transition:transform .3s cubic-bezier(.2,.9,.2,1),border-color .3s,box-shadow .3s;
+    user-select:none;outline:none;
+  }
+  .player:hover,.player:focus-visible{
+    transform:translateY(-3px);border-color:rgba(205,255,79,.42);
+    box-shadow:0 26px 60px -22px #000, 0 0 30px -10px rgba(205,255,79,.45);
+  }
+  .disc{
+    width:38px;height:38px;border-radius:50%;flex:none;position:relative;
+    background:
+      radial-gradient(circle,#0A0A08 0 4.5px, var(--lime) 4.5px 5.6px, #171224 5.6px 100%),
+      repeating-radial-gradient(circle,rgba(255,255,255,.08) 0 1px, transparent 1px 3px);
+    border:1px solid rgba(255,255,255,.2);
+    animation:spin 5.5s linear infinite;animation-play-state:paused;
+    box-shadow:inset 0 0 12px rgba(0,0,0,.8);
+  }
+  .disc::after{
+    content:"";position:absolute;inset:0;border-radius:50%;
+    background:conic-gradient(from 0deg,transparent 0 62%, rgba(255,255,255,.22) 72%, transparent 84%);
+    opacity:.9;
+  }
+  .playing .disc{animation-play-state:running}
+  .eq{display:flex;align-items:flex-end;gap:2.5px;height:15px;width:15px;flex:none}
+  .eq i{
+    width:2.5px;border-radius:2px;height:28%;
+    background:linear-gradient(180deg,var(--lime),#8CBF1F);
+    animation:eqb .9s ease-in-out infinite;animation-play-state:paused;
+  }
+  .eq i:nth-child(2){animation-delay:.18s}
+  .eq i:nth-child(3){animation-delay:.36s}
+  .eq i:nth-child(4){animation-delay:.12s}
+  .playing .eq i{animation-play-state:running}
+  @keyframes eqb{0%,100%{height:24%}50%{height:100%}}
+  .ptitle{
+    font-family:ui-monospace,monospace;font-size:10px;letter-spacing:1px;
+    color:#7A7590;line-height:1.3;white-space:nowrap;
+  }
+  .ptitle b{
+    display:block;font-size:11.5px;font-weight:600;letter-spacing:.2px;
+    color:#EDE9F5;font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    max-width:148px;overflow:hidden;text-overflow:ellipsis;
+  }
+  .playing .ptitle b{color:#fff}
+  .pbar{
+    position:absolute;left:0;bottom:0;height:2px;width:0;
+    background:linear-gradient(90deg,var(--lime),var(--cyan));
+    box-shadow:0 0 8px rgba(205,255,79,.6);
+  }
+  .phint{
+    position:fixed;right:22px;bottom:76px;z-index:69;
+    font-size:11.5px;padding:7px 12px;border-radius:10px;
+    background:rgba(205,255,79,.14);border:1px solid rgba(205,255,79,.4);
+    color:var(--lime);font-family:ui-monospace,monospace;letter-spacing:.5px;
+    opacity:0;transform:translateY(6px);transition:.4s;pointer-events:none;
+  }
+  .phint.on{opacity:1;transform:none}
+
+  /* toast */
+  .toast{
+    position:fixed;left:50%;bottom:26px;z-index:80;
+    transform:translate(-50%,200%);
+    background:rgba(14,10,23,.94);backdrop-filter:blur(18px);
+    border:1px solid rgba(205,255,79,.35);border-radius:14px;
+    padding:14px 20px;font-size:13px;max-width:min(92vw,430px);
+    box-shadow:0 22px 60px -18px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.04) inset,0 0 40px -10px rgba(205,255,79,.35);
+    transition:transform .45s cubic-bezier(.2,1.2,.3,1);line-height:1.7;color:#E8E4F0;
+  }
+  .toast.on{transform:translate(-50%,0)}
+  .toast b{color:var(--lime)}
+
+  .rev{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.9,.2,1)}
+  .rev.in{opacity:1;transform:none}
+
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .rev{opacity:1;transform:none}
+  }
+
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr;min-height:auto;gap:46px;padding:44px 0 26px}
+    .heroR{flex-direction:row;justify-content:center;align-items:center;gap:6px}
+    .badge{width:200px;height:200px;flex:none}
+    .idcard{max-width:236px;margin-left:-18px}
+    .cards{grid-template-columns:1fr}
+    .hobbies{grid-template-columns:1fr 1fr}
+    .pay{grid-template-columns:1fr;gap:26px;padding:30px 24px}
+    .qr{max-width:210px}
+    .award{grid-template-columns:52px 1fr;gap:14px}
+    .award .rm{text-align:left;grid-column:2}
+    .navlinks{display:none}
+  }
+  @media(max-width:560px){
+    .wrap{padding:0 16px}
+    section{padding:52px 0}
+    h1{letter-spacing:-2px}
+    .hobbies{grid-template-columns:1fr}
+    .heroR{flex-direction:column}
+    .idcard{margin:0;transform:rotate(-1deg)}
+    .badge{width:170px;height:170px}
+    .badge .core b{font-size:40px}
+    .sin{padding:30px 22px}
+    .sin .seal{width:140px;height:140px;font-size:130px;right:8px;bottom:-18px}
+    .srow{grid-template-columns:1fr;gap:4px}
+    .shead .en{display:none}
+    .player{right:12px;bottom:12px;padding:8px 14px 8px 8px;gap:9px}
+    .disc{width:34px;height:34px}
+    .ptitle b{max-width:104px;font-size:11px}
+    .phint{right:12px;bottom:64px}
+  }
+</style>
+<link rel="stylesheet" href="../返回展厅.css">
+<script src="../入场过渡.js"></script>
+</head>
+<body data-page-node-id="Lt0NqzNCxNwOq4ZoUhCgB9">
+<a class="exhibition-return" href="../../学员AI作品展.html" aria-label="返回作品展首页">← 返回作品展首页</a>
+
+<div data-page-node-id="YFV1FMDAaAp0XR1wOXwVmA" class="orbs">
+  <div data-page-node-id="CitBxW3ZvqIbPsommzBAry" class="orb o1"></div><div data-page-node-id="XXIl6ar5540qmdBlZ8PYXK" class="orb o2"></div>
+  <div data-page-node-id="nU3ZfRf2NyzYWDKmsloM7S" class="orb o3"></div><div data-page-node-id="Ep8mRhCy3DzflL5t05q3uk" class="orb o4"></div>
+</div>
+<div data-page-node-id="z7z6DUee9VFmyZPTiwD0Pi" class="spot" id="spot"></div>
+<div data-page-node-id="kdlHECPHdncLR3Wb4b8DBz" class="vig"></div>
+<div data-page-node-id="uvw6ZnzyFOb0PQdFxkaSP2" class="grain"></div>
+
+<div data-page-node-id="LBpBN98EMml2mdVCzHFryM" class="ticker">
+  <div data-page-node-id="6vAX24pihv0wPEJR6M2moR" class="mv">
+    <span data-page-node-id="kvtYlKEmtm58ikHZ8WC2Gr"><!--pnid:WcvJOwQRCxG0URQZcVghjl-->本页面为<b data-page-node-id="yLAuxaLLSpU9oq3hotypP3"><!--pnid:8O9dmAhTpVlI3WDY1TXIcC-->纯手工劣质制作</b></span>
+    <span data-page-node-id="oBhHM185OjZIcv9TNgoBuq"><!--pnid:8zaGox7uFGMuFZIf0ONdOp-->沟通请先支付 <b data-page-node-id="RBhcEqaFEDBhCI1ygDqlYZ"><!--pnid:HSUhYAnF3y2N7zsftZOZdw-->¥0.5</b></span>
+    <span data-page-node-id="Px6VOjiMovU3sMYvHxdwXL"><em data-page-node-id="2KAE8lZ9fJ4L1zKFAja9mi"><!--pnid:BIvnFaaqjMicOCnoH68K6k-->概不退款</em></span>
+    <span data-page-node-id="pQ9cDQr6zZ8VCiyDOUf2Pv"><!--pnid:SWK0v9ffLMANQiyHocYOu3-->我懒，但我真诚</span>
+    <span data-page-node-id="PQjRt1rseS5j5GxvKWcQYo"><!--pnid:mTWVhoOQinpxcprQaCCwit-->内容可能引起不适，<b data-page-node-id="nqFr0JZcRQzQ3bkX1ni1YS"><!--pnid:pdoweupby0ujIhn2jc9MHX-->不适就别看了</b></span>
+    <span data-page-node-id="PdmrvNayRQikC2Rwfeh6Q8"><!--pnid:puUDt4hOPaOmeeaftZ1DHn-->更新频率：看我心情</span>
+    <span data-page-node-id="kMkLIcbIT0ACFtPMv8q6n4"><!--pnid:W9Gu1LrjsShQZ1TojKPFs7-->本页面为<b data-page-node-id="RhqziOfqHkdmGIuZtEOnSS"><!--pnid:x8D5yeN0tQYL3ggV2xvQnq-->纯手工劣质制作</b></span>
+    <span data-page-node-id="LivNcKDJTbfnmpgZsenFGh"><!--pnid:tScekmEhsGnczgXL8yCPLK-->沟通请先支付 <b data-page-node-id="RPUGeM0dlFdDVJK9BpITxZ"><!--pnid:HDjJOXuiFPYrqdysWQ4daf-->¥0.5</b></span>
+    <span data-page-node-id="eVU7nQ8Nh5zAy8eHoIjsIb"><em data-page-node-id="mqzLkX1nImli5BYxM6VzBz"><!--pnid:i6Lu70OcyCbrc2mFVJNlX3-->概不退款</em></span>
+    <span data-page-node-id="n0liCAfYoIMBdtqWT3qiT5"><!--pnid:jQM17IwzFgSAdmSsaKF15P-->我懒，但我真诚</span>
+    <span data-page-node-id="VX7nKm9fYXNLCcHkCQ2xyP"><!--pnid:KG5W8LM1nFQ2xqWhzkUykA-->内容可能引起不适，<b data-page-node-id="wSxfEsv7jqGy7BDwWbejh6"><!--pnid:jnPsjzVcTPjj0PPl9eHMFR-->不适就别看了</b></span>
+    <span data-page-node-id="wqA9laGzEeWqqGq0VNXNDd"><!--pnid:T3N1Kadzbb0WXdYu78sTDm-->更新频率：看我心情</span>
+  </div>
+</div>
+
+<nav data-page-node-id="81vwC6L2FGC9WFx2wgKOXy">
+  <div data-page-node-id="1n6Lfua78RhJGEZOcEMeKN" class="in">
+    <div data-page-node-id="VljzexYBXDjz7W4xrSy1ej" class="brand"><!--pnid:tuUOzU0LxSdsqLEoNcJf5C-->JIN LUYAO <i data-page-node-id="WuV89UObAFZPWj5K1gyKL2"><!--pnid:TgDcahg2b5LfsdYF6O5Qp7-->/</i><!--pnid:Ppw5uabr47gjVxeURCvZGe--> 深夜档案</div>
+    <div data-page-node-id="Y54GidQjDaPSTVCA6b5pBZ" class="navlinks">
+      <a data-page-node-id="j3ulcwgiRCYwQtinCs8MpX" href="#who"><!--pnid:L4Erkoz23EL2h0ebnk8zJ3-->性格</a>
+      <a data-page-node-id="vNg0eHrmkMiUlOj3dDzhYA" href="#spec"><!--pnid:DbNScF2p6FPK2riZvVgtUJ-->参数</a>
+      <a data-page-node-id="tJFnH4WgzFxcxceJbnznNI" href="#hobby"><!--pnid:peDzzEk4drwRh6EAKQMLtS-->爱好</a>
+      <a data-page-node-id="Bp6bEo5Wi9hxhIUcmpIt4z" href="#sin"><!--pnid:tBv85F6nkkyM2CzgHME8tB-->那宗罪</a>
+      <a data-page-node-id="MOBSFAZSJmKd3Rn7Oh6sfj" href="#pay"><!--pnid:pqpDcD6GwFwaX2m0uADm5Q-->付费</a>
+    </div>
+    <div data-page-node-id="djdAAdzaiBaft3LcPscvB4" class="fee"><!--pnid:hjmpnYOJFRNOQlrprscCCm-->¥0.5 / 次</div>
+  </div>
+</nav>
+
+<div data-page-node-id="qpnk6qQfCrqaOYytaZiHRI" class="wrap">
+
+  <!--pnid:k0UK79a07c55o4g76yQREZ--><!-- HERO -->
+  <div data-page-node-id="04aWk86fKM5TFfue1YYaDL" class="hero">
+    <div data-page-node-id="NIAZ9azFRrYHkImFZnVEKe">
+      <div data-page-node-id="0eu5ONUgHEb5075USIqfIh" class="eyebrow"><span data-page-node-id="3uP7CZ2eFvV1zIUnhqaNHD" class="dotlive"></span><!--pnid:ZC5mO1G1JwLGOtzXL2Mj0p-->档案编号 <b data-page-node-id="ISurvuYHvyYpulcXTbFMcm"><!--pnid:jt293XI5A5kv5Xkq6q2Tes-->INTP-AQ-001</b><!--pnid:1I0qZSvojJST8EgII2rsA9--> · <span data-page-node-id="1uxVpfVgOVfeluKNS1HCoY" id="now"><!--pnid:7Fm2lP44g5sd6p6fimdLF4-->23:47</span><!--pnid:U9qJXFRHP5K8vg8v03juH8--> 记录</div>
+      <h1 data-page-node-id="onnTnzba6tAj3HcOMbfAnS"><span data-page-node-id="9mVdBaOE0obLI9HXFtWFUB"><!--pnid:hoZvBxCiWCeMaQCTBEwVgX-->靳</span><span data-page-node-id="enRnszJuyDmXnhL1IfMZEo"><!--pnid:tJSGI6PvhgwTomD8O4UK8i-->璐</span><span data-page-node-id="pRx090c9pxuaAJj48fKgvj"><!--pnid:n2Jx8njEjgv2W1bQ0gMktM-->瑶</span><span data-page-node-id="KjrSxlvpod1OVqUvlLh4FF" class="dot"><!--pnid:9tbZ3N02H5U2K9m7U6lF0U-->。</span></h1>
+      <p data-page-node-id="4EBXKzzHzoKvShRu6ngPRU" class="lede"><!--pnid:Tk0rEQAB1ZyyNWYThWf4eU-->慢热。抽象。<b data-page-node-id="UEDE07QHSBhdr6cqWzGWKd"><!--pnid:HrCwkDxGVXpsp0QXRPzQdQ-->懒散但高爆发</b><!--pnid:yZPm5WiCwiW7w0k6e1wodB-->。<br data-page-node-id="IN4OAS5qsgfopGf8p9H4Bf"><!--pnid:YXlLu37BUzeE6n6P3NcSdU-->别惹我，我爆发起来自己都怕。</p>
+      <p data-page-node-id="zuR5XVBYamqf7q71KLGR2v" class="lede2"><!--pnid:gHhfqRm813QE4nJ3iNOe8N-->以下内容由本人自费撰写，如有冒犯，说明你不太适合认识我。</p>
+      <div data-page-node-id="BrSxw1lFwXRxwwdt2MXD3a" class="tags">
+        <span data-page-node-id="0uYV938gAX9KVbDlgVjfwZ" class="tag"><!--pnid:ClV6VrcE3WxwJDhidi8fba-->慢热</span>
+        <span data-page-node-id="FcmYBL9Ia0MKyRnzaYCRys" class="tag"><!--pnid:aW6VlgfRbUg9WC0ABfZz99-->INTP</span>
+        <span data-page-node-id="IoK6bInlDEf5jEFt62H2wf" class="tag"><!--pnid:rLLs1SQPlLBNHCPsWHO2i7-->水瓶座</span>
+        <span data-page-node-id="nAYgBZyKXwvlnnZRPJbIXp" class="tag"><!--pnid:pGC8cAL9cuhMJiqbpdypmu-->躺平主义者</span>
+        <span data-page-node-id="RXQNmQp6XVLmcERSpGKowH" class="tag hot"><!--pnid:CxtlcPWrMUeEosTN24M1gZ-->傲慢 1/7</span>
+        <span data-page-node-id="cvwmu4xwSOCQ3Xz1sZbzWT" class="tag"><!--pnid:zdP9IAP2PCOqI4ojFiXSxY-->待机状态</span>
+      </div>
+      <div data-page-node-id="uul7RspgMJ0gXemraTfhfK" class="scrollhint"><i data-page-node-id="Z3vhxryYcnPTBV6IEYunGV"></i><!--pnid:ozEz1S1IpqnJZURp1Pfs0E--> 往下看看，但别抱太大期待</div>
+    </div>
+
+    <div data-page-node-id="ijXdrxYZczhBBeaziMDA3W" class="heroR">
+      <div data-page-node-id="SRlNnEvVNBFSbDI34GHzIH" class="badge">
+        <svg data-page-node-id="5Lhvvujdah8LOdVimQ60p2" class="ring" viewBox="0 0 260 260">
+          <defs data-page-node-id="l3KoEeOPxX9xyCUjZcShob"><path data-page-node-id="FLOShegdsSPTGe41IKHHO8" d="M130,130 m-104,0 a104,104 0 1,1 208,0 a104,104 0 1,1 -208,0" id="cir"/></defs>
+          <circle data-page-node-id="pHEbRKgVvpvhit2NK9y86w" cx="130" cy="130" fill="none" r="126" stroke="rgba(255,255,255,.14)" stroke-width="1"/>
+          <circle data-page-node-id="7SKkOJu3buQwxeyCF4pzmr" cx="130" cy="130" fill="none" r="100" stroke="rgba(205,255,79,.15)" stroke-dasharray="2 7" stroke-width="1"/>
+          <text data-page-node-id="Sqa1rMCawGJlI99IvvpZ6U" fill="#8A85A0" font-family="ui-monospace,monospace" font-size="11" letter-spacing="4.6">
+            <textPath data-page-node-id="MYSy8TpgtKhBaFCrxJCsZU" href="#cir" startOffset="0"><!--pnid:l597exdenBi3QHuqiXfYiA-->沟通费 0.5 元 · 概不退款 · 常年缺货 · 待机中 · </textPath>
+          </text>
+        </svg>
+        <div data-page-node-id="FgzkwTB3eohT5PhAbuJOJU" class="core"><div data-page-node-id="OToFK806OByELFUNM6HvV8"><b data-page-node-id="nUgtqZosQhUmEkoxX9xmwp"><!--pnid:FxyrIazCQOapJBbHqG2mYw-->¥0.5</b><small data-page-node-id="pcFNcBaGOCiWejrhTJBNSb"><!--pnid:Wlxf3EugMgFrPkolYdQptA-->PER TALK</small></div></div>
+      </div>
+
+      <div data-page-node-id="nhYXp8myAVWSczfiM5D0mO" class="idcard">
+        <div data-page-node-id="ZVqjOlog0LtSArOH1pQ4CB" class="ph"><!--pnid:YJPbtzZIoLSLRwZwYwUznh-->照片缺失（懒得 P）</div>
+        <dl data-page-node-id="At9ajCRH4LeofBiWbHvEbb">
+          <div data-page-node-id="QuRy7wypW2ZLcYjdFHKpti"><dt data-page-node-id="FkWsrZMAKNPtJkOlBtPqXZ"><!--pnid:Si6tZH60TSAv2YEdg91Aw1-->NAME</dt><dd data-page-node-id="1KvjBnSSWqbDvT2LxlwOJV"><!--pnid:uqpG7ipkZQT4X3LSf48kSV-->靳璐瑶</dd></div>
+          <div data-page-node-id="pIrcZFLgzpt3bpxcJ83ymC"><dt data-page-node-id="B1QTkB3seXy7l7ZU1uBBiO"><!--pnid:z3YcHRdqfCkKHlgMaSofxg-->MODEL</dt><dd data-page-node-id="ZK9gjz92GPqvItm6SGQpBc"><!--pnid:E7B6vwEGp2wbNRXL7JjWOI-->INTP</dd></div>
+          <div data-page-node-id="1RP5Z400ZddeU4lVUYwdrp"><dt data-page-node-id="RvGrYQBZBoN8CoyiT8nQJi"><!--pnid:crLlOhhxcA9k9Qz7GFUcWL-->SIGN</dt><dd data-page-node-id="YbHT2byW5CFta5OhiRfd5p"><!--pnid:ALZosqxsu5ff2W2hjO5lNv-->水瓶座</dd></div>
+          <div data-page-node-id="dZn1OirOx3ZlmyxBkVAFSh"><dt data-page-node-id="sk39meHL3uUH1RM2bA0X3l"><!--pnid:CIqLNJJynJVcLBjXGaXmHk-->STATE</dt><dd data-page-node-id="VvmIlJwdaL6zwtXh5sfGpt" class="hot"><!--pnid:k2TEUqpSNJ6YiMDCX2kg20-->待机中</dd></div>
+          <div data-page-node-id="8SiiK2wYU0AeR4dk7j2Kw2"><dt data-page-node-id="d7gaSLoLXbfgEMIIq9oVkx"><!--pnid:LDJ2WqfL30cJkTeI5NCbP4-->RATE</dt><dd data-page-node-id="Ezngy1SXi1pYFm28xmb6lp" class="hot"><!--pnid:jVSJAQZq17bhoOjgeE3bsO-->¥0.5 / 次</dd></div>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <!--pnid:V1AS900V6GYzUMSuDuzTZR--><!-- 01 性格 -->
+  <section data-page-node-id="XtQjIpcBviVLQUMjbrfIVz" class="rev" id="who">
+    <div data-page-node-id="v6jtqZwAlpEcCrWwG7mGGm" class="shead"><span data-page-node-id="B7clQc6XeEcAm287mNhG6m" class="no"><!--pnid:MPoTpvMFbEGz0oibvv2NrA-->01 /</span><h2 data-page-node-id="4CZu7blUjXAGaOVWw6wSe4"><!--pnid:aoAUKcICpm3Yv5GiSZCcdS-->先说性格</h2><span data-page-node-id="8vQiRX6lzrUl9O1Nw8zrVr" class="en"><!--pnid:K0K8d2vDD6P1xqznvWyXbS-->WHO AM I</span></div>
+    <div data-page-node-id="dd8vANcNASS3kqWKcILZyB" class="hrline"></div>
+    <div data-page-node-id="lkH6NlggrAj4ZaQ0pYMnfx" class="cards">
+      <div data-page-node-id="L2FXhKNYGl8coULllLs9l5" class="pcard">
+        <span data-page-node-id="MTjqwZaz9MAWxMH5FwBsKu" class="idx"><!--pnid:gwQfjb7v98RMbg0CbYAzve-->01 — 慢热</span>
+        <h3 data-page-node-id="KlQbFRbbl4ZBVoHNgZOboz"><u data-page-node-id="X6qp0OBVQtvTojWAVQXP8g"><!--pnid:PG0pEm2YAqqrFu6iMJvmZE-->预热时间约三个月</u></h3>
+        <p data-page-node-id="TENP1VWqjWXuKrbk4tWueJ"><!--pnid:LqcOr2XzEVpVVrRTRErO25-->认识我三个月后你会发现，我不是慢热，我只是懒得开口。真话是：我不太会主动，但我记得住你在意什么。</p>
+        <div data-page-node-id="osETkPdxayWcxJkskd4oht" class="note"><!--pnid:gmZdk3vn8WMbQOYWNE2zid-->→ 提前预约可插队</div>
+      </div>
+      <div data-page-node-id="OfzqQMqMVDaMVzQiomJVtS" class="pcard">
+        <span data-page-node-id="yz7L8jdIeuvAVfydPSAjkB" class="idx"><!--pnid:jrMutkrxWyuBLI8NiWC4MZ-->02 — 抽象</span>
+        <h3 data-page-node-id="K3ymw98Z9TQew6eg1VSeL4"><!--pnid:LI0d3MMz8COXpd8edHzQdJ-->说话像在<u data-page-node-id="577cpC3ZQfJWPmsMiO09qR"><!--pnid:QVHQBnh33Y4cJ4QEkoxp6r-->解谜</u></h3>
+        <p data-page-node-id="Rjgrd2HDkNI7MVYBeCh93Z"><!--pnid:UhpgrdOdohs5lI8ZRD2xWt-->朋友说我讲事情总绕一圈。我不是故意的，我只是觉得这样比较有意思。你要是听不懂，可以问我——我会用更抽象的方式再讲一遍。</p>
+        <div data-page-node-id="8xcSoMRturS1cogHc4tCpj" class="note"><!--pnid:yjDEMgzMwukdpaWUsiC81w-->→ 不适请及时止损</div>
+      </div>
+      <div data-page-node-id="FcX8RiSovVzJ08GnzV8QrC" class="pcard">
+        <span data-page-node-id="zI1iwskIrI9ixdCysxjNbU" class="idx"><!--pnid:mLGYQku2ECKs6vHFsmctsh-->03 — 幽默风趣</span>
+        <h3 data-page-node-id="k8RHsJULrPCk7UwF6aZKGM"><!--pnid:54TCocF8VaDfWmTrBBuZ8L-->这条是<u data-page-node-id="uXMZktLa3fFiaYV11T62b1"><!--pnid:561c1KtOVZR19mCOnLU5G6-->我自己评的</u></h3>
+        <p data-page-node-id="z5GkzUoEwP8Aks9rjamLQD"><!--pnid:J20TlQjcwsFYJ0872nAxSu-->参考价值有限，望周知。唯一能保证的是：我只讲自己的笑话，从不拿别人当素材。</p>
+        <div data-page-node-id="V3B2XzbDFVZOJa4I7pb3fK" class="note"><!--pnid:bKwyUtRyOMMfuSXHxTYlL8-->→ 自评，可能不准</div>
+      </div>
+      <div data-page-node-id="u63i1HHYWmex6TLabDbhEA" class="pcard">
+        <span data-page-node-id="OXIKjasorUo9IltkvyxFPM" class="idx"><!--pnid:G1N4FGZMA4Vnmx7i5Maqdn-->04 — 真诚</span>
+        <h3 data-page-node-id="vHlZSWL5ih6yi9B3MtSEWZ"><!--pnid:8JoK2dezBTyfQkCA1ISnqD-->唯一<u data-page-node-id="UtwnAZwvmfW58uNZfYVBzV"><!--pnid:8QQ5T4UB3BkSXulR0zdMJL-->不抽象</u><!--pnid:kH46RflXZB75Hez7xtg7Y6-->的一项</h3>
+        <p data-page-node-id="F6WPJFJGuDHRkygQURACHP"><!--pnid:UM2yMsnhIvTtGNtgjfVIZn-->我不会骗你，也不会背后说你。我只是有时候懒得把话说全，你可以直接问我，我一般会答。</p>
+        <div data-page-node-id="2nqb7DtgjLHwaXfgHfhomu" class="note"><!--pnid:3jt2zBzB6czwtR5azL8O8C-->→ 这条是真的</div>
+      </div>
+    </div>
+  </section>
+
+  <!--pnid:c7hSvsxwbxaENpqEUv1rz3--><!-- 02 参数 -->
+  <section data-page-node-id="yvXpHze4FB5PCKQlkExqBl" class="rev" id="spec">
+    <div data-page-node-id="W0KQeBlk5gyH1M805xnQH1" class="shead"><span data-page-node-id="C39ODtoZts1gcJeduFm8nz" class="no"><!--pnid:pTOlfHOQlSTJ9Oh8QzluWN-->02 /</span><h2 data-page-node-id="hys8hiAlCqkVP4n65QZLWv"><!--pnid:bhaqPUSihoqvIGeyVycx7n-->出厂参数</h2><span data-page-node-id="OIy7TZAlEMS79KSka6j0qo" class="en"><!--pnid:WLNJpoReRT6ynHoxf5xshd-->SPECIFICATION</span></div>
+    <div data-page-node-id="JJWSxsIAM9R2AfgVJlxtSl" class="hrline"></div>
+    <div data-page-node-id="f1NdU4xLnxn9Uv0gSFaIuI" class="spec">
+      <div data-page-node-id="rlyLJRcenZpZQDBzSy4WH0" class="top"><span data-page-node-id="4OYBS2Kd1o65MVPkUakKyv"><!--pnid:CIha4oHyBjMO7cfWqIHB3R-->PRODUCT SPEC · INTP-AQ</span><em data-page-node-id="GbCcM1ueNv7BAyQahcucUn"><!--pnid:LtFpmuDtr1s7sb6WkRvlGz-->非官方认证</em></div>
+      <div data-page-node-id="9BdwsiN60LSlz620ZGQMCL" class="srow"><span data-page-node-id="3hN3wFJudgHTIpU6OJzE7i"><!--pnid:cwOckwsBxl0vBENBt0za8y-->型号</span><b data-page-node-id="VJ3mnwkr9Y8hwxBmQOYD2M"><!--pnid:sf2CEA8qZDLCexXfp9dEnQ-->INTP-AQ（水瓶座特供版）</b></div>
+      <div data-page-node-id="3OOWcWtgyLBAjW6WV9lF46" class="srow"><span data-page-node-id="iiEW0DRvAO0ArCHMmDp945"><!--pnid:tTTNsC0Kr46hpRhZta2x25-->出厂配置</span><b data-page-node-id="CFvSCcAzclnTwRILra2GfM"><!--pnid:EkBkbBiSJmIxbyGk92EJjX-->脑子一个，常年超频，但不常开机</b></div>
+      <div data-page-node-id="eEVxIUiK4Sp6XYPPg1AvBv" class="srow"><span data-page-node-id="Fx980bJiZE7ExkfdUK17mK"><!--pnid:FJsJEcIDxR0YXKgcvQLosY-->日常功耗</span><b data-page-node-id="xkXJ5R6F3JkMK8Sy9G3sj6"><!--pnid:WumbLXb587NYDg7rqisZrv-->极低，约等于待机</b></div>
+      <div data-page-node-id="pCYmnT5n6c8s6XhbdQrub0" class="srow"><span data-page-node-id="10iIqYeVJSUmsNhfFjuCLR"><!--pnid:H24wf3F69Db5r4emfuNap3-->爆发功率</span><b data-page-node-id="lUUqxCw2cH4DDDMlR0B09x" class="warn"><!--pnid:fHKDAycDCIYRFdblBzuCoT-->极高，仅在 deadline 前 6 小时可达峰值</b></div>
+      <div data-page-node-id="f5trNzpYaddjtOnFZH1mZ6" class="srow"><span data-page-node-id="tdS3DK1srMxDbEoWl8bchM"><!--pnid:SwXLckDgRSMV7qC3p3lNyX-->预装软件</span><b data-page-node-id="eszgfuuyx1vjZiQJd1K7ul"><!--pnid:XoVXId1NLI9VfR5UN7OPti-->画画 / 剪辑 / 听歌 / 睡觉 / 偷懒 / 游戏 / 小说</b></div>
+      <div data-page-node-id="4qrGUPWtDHjD0zUAyzttUR" class="srow"><span data-page-node-id="CIxytEz3RCJ2BAG3kbyQ1F"><!--pnid:8CBgJPtuETQtcRZVRIKnbJ-->默认模式</span><b data-page-node-id="HXX6IRetGw0s4KirN0EJ8p"><!--pnid:4MdcEh6E4bzuKvUfBa437o-->躺平</b></div>
+      <div data-page-node-id="ElhvnFWGIhxDG8MBFaekIb" class="srow"><span data-page-node-id="HeAACcYhEGVCvun1q2nNTA"><!--pnid:n3ZSJfiT9DahAzWNJrHhgF-->不足之处</span><b data-page-node-id="svy5x4P37j3o6wSbT9vyxH"><!--pnid:6SMqejX6SyUFvyS11VjTVC-->产能不稳定、易拖延、拒绝加班</b></div>
+      <div data-page-node-id="dIRG366PbIfOqE39Y7qKeI" class="srow"><span data-page-node-id="mhxux0YlT6QC60DgfV3EjN"><!--pnid:tHB5m6ArPlgcS8kbv2cH9m-->售后</span><b data-page-node-id="6NYxmtRIylgAFwoP3zRTK1" class="warn"><!--pnid:eLD96NS8zXgQBUke9pwEVD-->无。坏了也别修，我也不想修。</b></div>
+    </div>
+  </section>
+
+  <!--pnid:zOCngoMi9aBrIu1x4AnnFc--><!-- 03 爱好 -->
+  <section data-page-node-id="RaZTc1nyX5jRq4ir4RjTbk" class="rev" id="hobby">
+    <div data-page-node-id="PpQ2rb7WiXRFpFbXPBUojf" class="shead"><span data-page-node-id="qPRPIXxD6OuCk93suLtrCi" class="no"><!--pnid:KOmiVvqrDXGtzyLmXYPD68-->03 /</span><h2 data-page-node-id="v0ebWqQ0X9H9aBIgxxVR1g"><!--pnid:SlF8DDmRcyp3xJ1vrYd2F5-->平时在干什么</h2><span data-page-node-id="fcrlK0eDtHpucKCIdim9ov" class="en"><!--pnid:m8V2TL2KqSS9abkTLuG1TW-->DAILY OPERATIONS</span></div>
+    <div data-page-node-id="aJ9rWpH8euA8D2ilDha90D" class="hrline"></div>
+    <div data-page-node-id="pSGACsdKKsLgEppObDnFCb" class="hobbies">
+      <div data-page-node-id="RwwWzHPc5YAKLicPJdEsdx" class="hobby">
+        <span data-page-node-id="WAjW6YgmZbEr9fjHfimpz9" class="num"><!--pnid:0WG8ewySKZ4t6LkDc65MxC-->NO.01</span>
+        <h4 data-page-node-id="ygQPhPWlIW3PFKoFj9lhWx"><!--pnid:vBCNlK0Zj46fm5FV8WMcBU-->画画</h4>
+        <span data-page-node-id="NmlEKQibJaKLv4blskTuno" class="stars"><!--pnid:Z1Nm8uyEGS0boj3gAGpqZ1-->★★★☆☆</span>
+        <p data-page-node-id="wcvE2SQltOstdg9DcwdeZu"><!--pnid:ie3ojDICI8LvS3fdNzXESW-->画得很抽象，但真的是在认真画。偶尔画得像，那属于巧合。</p>
+      </div>
+      <div data-page-node-id="hpi6Lt4Rr4sjwWUV1r208D" class="hobby">
+        <span data-page-node-id="IW2xGtPzes5LRm1D3hQaj3" class="num"><!--pnid:4Rt1CXHsiUROb1JwJN76fL-->NO.02</span>
+        <h4 data-page-node-id="gJxEK0XBoS1SCtgGCialF4"><!--pnid:PapOurxX2XYmQghquvEkMI-->剪辑</h4>
+        <span data-page-node-id="lwJmHTItc2ErnHdzeLN1KO" class="stars"><!--pnid:ytSA6zQu2ajthP6xFVdqJI-->★★★★☆</span>
+        <p data-page-node-id="TG31iPWo8XshIry3XtrLPD"><!--pnid:WJpetwEAaKLfQCRTXYQSys-->剪别人的片子比剪自己的认真，因为别人的有 deadline。</p>
+      </div>
+      <div data-page-node-id="wTE4wVUcT3Gi1tQNPStphc" class="hobby">
+        <span data-page-node-id="LaKRKBR5JyTMTrUZ4pKkOt" class="num"><!--pnid:hsdkausRK9KrH5yuFMxxtn-->NO.03</span>
+        <h4 data-page-node-id="5aO2oypNwRUwRfHwB4mS5J"><!--pnid:5PTLUYRyuXKQKUnTv8hBaF-->听歌</h4>
+        <span data-page-node-id="uKLdP6Il3OISARa8UuNuc6" class="stars"><!--pnid:Z9QRqMHMLje5ggfVg3InGH-->★★★★★</span>
+        <p data-page-node-id="Te14yOL6iYXazcCuj5wqrM"><!--pnid:cv1eok1KvJK0ShENvWUgmj-->歌单跨度从古典到喊麦，随机播放的时候会把自己吓一跳。</p>
+      </div>
+      <div data-page-node-id="HMxAG2f59tz25C37w5FUsv" class="hobby">
+        <span data-page-node-id="cfbVUWI0urmyq0YDtSFFJC" class="num"><!--pnid:oW1nzTqceQcj80MJtWREFe-->NO.04</span>
+        <h4 data-page-node-id="6scjlN9ALR9ygmcFUGwEHZ"><!--pnid:g0czcYcLBdYNgeTfzn2xHW-->睡觉</h4>
+        <span data-page-node-id="096YM0STRmhzv4F25akZNj" class="stars"><!--pnid:RgfNMkDE2uGc1EY9Q5TrTs-->★★★★★</span>
+        <p data-page-node-id="WqdFosSaMlcO086bR1QzEp"><!--pnid:ZZ2jhKxa8bDdDsFhtCOpNv-->主修专业，学分已满，仍在继续修。梦里比现实讲道理。</p>
+      </div>
+      <div data-page-node-id="IH9dQ15AdDWbK46dnhBhcC" class="hobby">
+        <span data-page-node-id="BJ21xgMGZSQ40IFbBLh5jP" class="num"><!--pnid:tyfQGvRfrnNyqLCfpEyUTw-->NO.05</span>
+        <h4 data-page-node-id="oihx3c7r9P7WYQkJPIHkHv"><!--pnid:immUlVIdNL4aaPtuyOKb0I-->偷懒</h4>
+        <span data-page-node-id="SKNpwGMqeRGmuaOsmk2PKB" class="stars"><!--pnid:kUseaBOfkHLX1Be36RncCF-->★★★★★</span>
+        <p data-page-node-id="Sh2ZVIkf6dlBmJwtttyrnN"><!--pnid:bvRPqOTBtMELrVbTGR1un5-->严格来说不算爱好，算天赋。而且是那种不用练习就满级的天赋。</p>
+      </div>
+      <div data-page-node-id="k4UaeBW15jrW86GkzjCxSA" class="hobby">
+        <span data-page-node-id="SPeeoEVA5FUpYw9T0aHDqq" class="num"><!--pnid:WleG9GGIRemnEZFNup5R7K-->NO.06</span>
+        <h4 data-page-node-id="59OHJBFkmi0gnwHaqqrh2i"><!--pnid:JNmODKPv1erD9JYyfJQAlG-->打游戏</h4>
+        <span data-page-node-id="31wWlcBvEIYYZmRjOSDrcb" class="stars"><!--pnid:dl9EZf0OmCF3uSK1VQ0Vht-->★★★★☆</span>
+        <p data-page-node-id="WnK38hKMsjJWRgNTggClMN"><!--pnid:pUICiIKFpfUf1ZUIomwdhB-->输了我怪网速，赢了我怪对手太弱。反正问题不在我。</p>
+      </div>
+      <div data-page-node-id="CJC9vOVmDhq4dmUGE7hWFO" class="hobby">
+        <span data-page-node-id="YNnLA2yOu0FihoeqSZagK6" class="num"><!--pnid:rWVSqPNLWGa1VmCT3nMb92-->NO.07</span>
+        <h4 data-page-node-id="jGuZks8tBaRImmbUhcjIQX"><!--pnid:B3rgXplvBCboKx4ZopNkb4-->看小说</h4>
+        <span data-page-node-id="yQMYdAGFKPfgqJoQVskKYQ" class="stars"><!--pnid:3NSg4bYOE3YZsVP8DfTOlK-->★★★★★</span>
+        <p data-page-node-id="Qt0vbEGDGR3ya48AYiL9T2"><!--pnid:z5Ax1h3l0o6wQgSyiL9rV9-->一天三本，看完就忘，忘完再看，实现永久续航。</p>
+      </div>
+    </div>
+  </section>
+
+  <!--pnid:ViKJ7CM6ohKHtvhR8ccrjQ--><!-- 04 状态 -->
+  <section data-page-node-id="cq6nteiwjDPtckTNK2tE3V" class="rev">
+    <div data-page-node-id="jd8ZL0lUYDO5VHvECQl4eY" class="shead"><span data-page-node-id="4rsDIk8PxbnF5Wf0F5xthT" class="no"><!--pnid:u8VHOYlJ5Xb0gEHQyCa633-->04 /</span><h2 data-page-node-id="llyYEpFEluLYjoVpOOk42f"><!--pnid:7iO0eoyg7ROwuXmy30jUlS-->实时状态</h2><span data-page-node-id="QGmuqg98eCz5nI5KAd94pA" class="en"><!--pnid:S71gRWuWp1VNfmzYTwVvCU-->SYSTEM MONITOR</span></div>
+    <div data-page-node-id="DPJdAzQAsP48H335zX1OhC" class="hrline"></div>
+    <div data-page-node-id="aZwHpfJylyRrpDPsC3YOyg" class="bars">
+      <div data-page-node-id="214RscCx4J2IcrwBfu5rFm" class="bar">
+        <div data-page-node-id="Ng2iIGv2vSMuSGXb88gmuq" class="lab"><strong data-page-node-id="IAqBZ5AWflvCBEZgWp2y2d"><!--pnid:9l128qow6PDWXRck6QWINM-->躺平进度</strong><em data-page-node-id="FFvcVbAu1zwKBn0Gyir648"><!--pnid:W3jGWuctCWPdj5VIYIUDE9-->终生目标 · 99%</em></div>
+        <div data-page-node-id="qOBrueQJ88EklzzQqlRKi6" class="track"><div data-page-node-id="A3qYZDjSrs9cigIhNpsv6v" class="fill y" data-w="99%"></div></div>
+        <div data-page-node-id="FkEYyRjljajdzLPuGMIpTN" class="cap"><!--pnid:YqHbzTbgObx8yni3rUIcJc-->剩余 1%，用于翻身。</div>
+      </div>
+      <div data-page-node-id="tR1Ltnj5ICEKircnPjmj8p" class="bar">
+        <div data-page-node-id="qW6wX1mAVdhWNnmQ70Lqk9" class="lab"><strong data-page-node-id="bNnGwISAXRGXhoM233nTLp"><!--pnid:BzV1ooGuxnL5aC9I3QoXhL-->日常输出</strong><em data-page-node-id="PYbpSLFygtIwY32hNHll3M"><!--pnid:HlrrjJFdmMsig9OxU1JN8F-->5%</em></div>
+        <div data-page-node-id="a8HwlKJS6I62EfEatvZAjy" class="track"><div data-page-node-id="Sm3v9gnRzqVsKaibNON46C" class="fill p" data-w="5%"></div></div>
+        <div data-page-node-id="fSDQK556zei874HtNbklOr" class="cap"><!--pnid:CnBYfLwyWbvQ80SIiIPMpR-->状态描述：一条不想动的鱼。</div>
+      </div>
+      <div data-page-node-id="Up4v1Y69OMj9Y90104YEi6" class="bar">
+        <div data-page-node-id="l3z8VsPCAyLWuwSTdweZs7" class="lab"><strong data-page-node-id="tYaY6WvUINwV7Nlhn4pbeA"><!--pnid:wkY5AlA3NB0bDjjZEE8owG-->爆发输出</strong><em data-page-node-id="TEsEzU3FOX9ki0y40X2bon"><!--pnid:LsBiu4S3Vd4qGsfkeBn2ss-->deadline 前 6 小时</em></div>
+        <div data-page-node-id="6XUM7S3o1fWYXpUv2VZZ4A" class="track"><div data-page-node-id="2E7JK3SiFiMXaqS0RgUYAH" class="fill c" data-w="100%"></div></div>
+        <div data-page-node-id="lKqdq5W6jmAQlfTnGRPemU" class="cap"><!--pnid:iDZ7tIdeGq4IRk9ASc9Tbw-->状态描述：六个小时的产能，抵别人三天。别问我平时为什么不这样。</div>
+      </div>
+    </div>
+  </section>
+
+  <!--pnid:1cb1Bz3PPRy5P2GD2WcrzM--><!-- 05 傲慢 -->
+  <section data-page-node-id="tHACQYvCNjYnuNRO0lRh7B" class="rev" id="sin">
+    <div data-page-node-id="mtbU749sGxlgtMh71Ax7I5" class="shead"><span data-page-node-id="VW908FJzHtPlbIej6LUBnw" class="no"><!--pnid:E43nwa1LqIx46BqQc4bOWs-->05 /</span><h2 data-page-node-id="E8jzWqQ5mF80r5JaHWowWF"><!--pnid:vuJUXFFL4uqoglBCAQZRAv-->关于我那宗罪</h2><span data-page-node-id="LNs7ADJfBMqj7SaowTnBZm" class="en"><!--pnid:cJTHECjWPX9exhn9SeWgcJ-->SEVEN DEADLY SINS</span></div>
+    <div data-page-node-id="hEkYNBGPsqNvdCTt3NEcch" class="hrline"></div>
+    <div data-page-node-id="wPVbwW8PGzaCkPMhddjROk" class="sin">
+      <div data-page-node-id="tVAR0v0myXtsp8DAroJMqf" class="lab"><!--pnid:KbhKQK80hzZqbTPTpZRcfJ-->QUOTA USED · 1 / 7</div>
+      <h2 data-page-node-id="LGbj8A2H6du6NIGWIQAPUk"><!--pnid:iU83HJZI0s14NDSpn57Nqn-->傲慢<small data-page-node-id="iVIHq424ltLxh3wyXF7Ks8"><!--pnid:RZXvYnnsdmEPYGjS11ZdTi-->SUPERBIA</small></h2>
+      <p data-page-node-id="aMKMp7YAKQiH8xTGPwKkSc"><!--pnid:gxt16jRx14yy7WRdSuFqcm-->七宗罪里我只占一条。<b data-page-node-id="psw2Xyb2mXnk3v11gOkpzw"><!--pnid:d3LBAtvwEmPmRFnT3bAvgL-->傲慢。</b></p>
+      <p data-page-node-id="5H9Qpopz2xAFvnzHHNG6V6"><!--pnid:XLbZx1oi5daNAx7TWd2ML5-->具体表现是：我可以把自己的缺点摊开来讲，一条一条，讲得比谁都狠。但如果这话从你嘴里说出来——不好意思，我们没那么熟。</p>
+      <span data-page-node-id="f8wn9Pfx94FdYdHQCXwFuE" class="quote"><!--pnid:m6pvNvkX5UJ21MM4neGmFt-->这不是双标，这是版权。</span>
+      <div data-page-node-id="kRVeqv84Wxdi0S7GFxpJXO" class="seal"><!--pnid:tPtNyzqgTIhJ8XpZDVQVXa-->傲</div>
+    </div>
+  </section>
+
+  <!--pnid:Wg28An8qByYLwMjRk11EhY--><!-- 06 荣誉 -->
+  <section data-page-node-id="L3e8sgUYJ98nY5A8FJPSKt" class="rev">
+    <div data-page-node-id="LRsAnAG0yhcEBn9zOKt7FB" class="shead"><span data-page-node-id="Sc6u8IVkkjkdjbGikB8UvU" class="no"><!--pnid:L8k3dlz26D7qYSSOrnuXln-->06 /</span><h2 data-page-node-id="LtLaLawJNcNmTGwQ58IcG5"><!--pnid:2xC9l0AwY4lp9PciSymuBf-->荣誉墙</h2><span data-page-node-id="ci0sKIVEDEWctZyzkU1VxU" class="en"><!--pnid:XQfkX2Pxcgl350mvk22pNI-->AWARDS · 非官方</span></div>
+    <div data-page-node-id="veF9JOUUqrr54OzEpxhD4v" class="hrline"></div>
+    <div data-page-node-id="EwXHDja67G2cvvRhzRcUii" class="awards">
+      <div data-page-node-id="BNQNRB57t6nagtTy6MriJn" class="award">
+        <div data-page-node-id="37yeZnDlFOCEaf9l0IPV7y" class="no"><!--pnid:6gVHTF6KjTh65G8SN1Qt8J-->NO.01</div>
+        <div data-page-node-id="vE9E1GApmUzgZurkoNbxOu">
+          <span data-page-node-id="VvKno0g1FC9YWVHUVfl4Js" class="tagA"><!--pnid:sgf8CAfzu91vfSY8v6E7zB-->群众投票</span>
+          <h4 data-page-node-id="sjK7O4SFYEuZFqi3HuIEJp"><!--pnid:gamuvGMxOMU8Ou3kgnKabH-->免费的劳动力</h4>
+          <div data-page-node-id="USVbz9aGsUiijP1bgqLavo" class="sub"><!--pnid:g2rhBhQWfD89R5lc1sBipl-->授予：所有「你帮我弄一下呗」的瞬间。</div>
+        </div>
+        <div data-page-node-id="ajmxo3EVjy6WuRgkDZAh9b" class="rm"><i data-page-node-id="CpblKmXs3RSs6f8k2K1kOR"><!--pnid:nYAIkxssHganaFVJjISBc6-->获奖感言</i><!--pnid:KmUHqKnlgSnN6NIdVERvhb-->好的，没问题，马上。（心里：我也是有课的人）</div>
+      </div>
+      <div data-page-node-id="kR7EsDCe90sAVJvAkAdVOp" class="award">
+        <div data-page-node-id="XpkZBRVj2qOqvLwuZWJWBE" class="no"><!--pnid:GvSyZozkIABV5VOE1XTKwE-->NO.02</div>
+        <div data-page-node-id="oqN6MSHZ0TJxUvJRSoahLW">
+          <span data-page-node-id="CazFM3YJLcvkw3JGRKXq51" class="tagA"><!--pnid:oVYVSqLkuE5jb7bdmfSG0Y-->小组作业</span>
+          <h4 data-page-node-id="D4v4J0nGVnKn1tTCfAdgwn"><!--pnid:2RAnhhozw0tv4fPBxxRUiP-->被剥削的劳动人民</h4>
+          <div data-page-node-id="ZlPPsN7X50Rm44nBAVJrTQ" class="sub"><!--pnid:B4hy5DdiYXlxuhfWrdyhJV-->授予：永远做最后一版的那个人。</div>
+        </div>
+        <div data-page-node-id="saR2q4bGcaT5acyJ4o0y4R" class="rm"><i data-page-node-id="Y4uWOCFww9HIPe00EHExOn"><!--pnid:YEMXx3uPGo6vtsfyW2h0SG-->获奖感言</i><!--pnid:LdsTyhPslGxYf67FbBHy0s-->署名给我留个位置就行，倒数第二个也可以。</div>
+      </div>
+      <div data-page-node-id="808WpsfQRvwZUxrsGIeQsc" class="award">
+        <div data-page-node-id="5d60K7Mpr53kz84virFyvT" class="no"><!--pnid:Q5liqs8d88e2QXZaJCdf7k-->NO.03</div>
+        <div data-page-node-id="T7zkyeJR51GXVe1QUvmMcU">
+          <span data-page-node-id="zbTIG5kvY6En04lUmBEfLf" class="tagA"><!--pnid:HKCAIL8dj0ZkXhm28lxsmO-->终身成就</span>
+          <h4 data-page-node-id="El3NzzV6WUpPLSZ9klFeCX"><!--pnid:uIaIhpPqfrxtg2UFvFEeaP-->苦命的大学生</h4>
+          <div data-page-node-id="nvDCMsNhXmA3bLPnzfnqY3" class="sub"><!--pnid:Ru1Pa4zcvLMeSVnGp0wgWM-->授予：早八、论文、兼职、社交四线并行的每一位。</div>
+        </div>
+        <div data-page-node-id="QT25AI1F6kNrJzSDX3PFxC" class="rm"><i data-page-node-id="ggpfqZhH3TvNAofXUnwYEh"><!--pnid:LQMqRtGsLZEzXnMnKDlSHR-->获奖感言</i><!--pnid:xtHlv8PcPlHc14R4rsKfZX-->我不是在抱怨，我是在陈述事实。</div>
+      </div>
+    </div>
+  </section>
+
+  <!--pnid:XUeX34utvPRUnHlJ0QLZwS--><!-- 07 付费 -->
+  <section data-page-node-id="YpphjvetSZxpKDRzoQxtU2" class="rev" id="pay">
+    <div data-page-node-id="JgMuOhv5iicwUvtYTGrHlr" class="shead"><span data-page-node-id="47rMjM3QXufuk6Of1DaDE1" class="no"><!--pnid:FG0oeml49TsV3czibxoa1m-->07 /</span><h2 data-page-node-id="kH0AZFrT4oH1Sl5I1a9oo8"><!--pnid:8SdTRFWcn33bzXpumAYqvq-->想认识我？</h2><span data-page-node-id="wKe4u557DTFrpEWsFsl4ev" class="en"><!--pnid:aE3YvMqUpI9D1KbIBI07RB-->PAY HERE</span></div>
+    <div data-page-node-id="5yw4bv42DpoTEk31OYDNYG" class="hrline"></div>
+    <div data-page-node-id="qD3VO9J9T12sRa1S5BpRLl" class="pay">
+      <div data-page-node-id="ahRUf8n14PUct0olb2TQnv">
+        <h2 data-page-node-id="YLj1ROACxipHaiuPE8SG5N"><!--pnid:GdIL45vBOw7y4ztijMGohY-->先付五毛，再聊天。</h2>
+        <div data-page-node-id="Yqx5X5X2pUFxlDo9bsJhPS" class="price"><b data-page-node-id="HO78hWFYwDdBqMJaBD1z2k"><!--pnid:vGrURsFQpBeeRKip6msSw8-->¥0.5</b><span data-page-node-id="HWAbLXEKLlgocjQfrD0lQ9"><!--pnid:cUUT4z9xpBCQ03nENZYA9B-->PER CONVERSATION · 不接受议价</span></div>
+        <p data-page-node-id="gCHIWcpkoZ2I6ulieE8QD4"><!--pnid:ibtIVGGj9mxRfO3oInUkKt-->不是因为我贵，是因为我懒。收费能筛掉 80% 一时兴起的人——剩下那 20%，我也不一定回。当然，你要是不付直接来找我，我也不会真的拦你，毕竟我也很闲。</p>
+        <div data-page-node-id="nLRf3QP7nUyF4lCAyhRWI0" class="btns">
+          <button data-page-node-id="P1q1Rb1PNxzex3QzGjTA4F" class="btn-main" id="payBtn"><!--pnid:rKa5DR1Hjhzhr5ClWWUppD-->支付 ¥0.5（假装）</button>
+          <button data-page-node-id="368ZqCpWeiAnPiFejK92e2" class="btn-ghost" id="refreshBtn"><!--pnid:YdJT9VVe1t15ogKEuOInAT-->刷新精神状态</button>
+        </div>
+      </div>
+      <div data-page-node-id="vjt3oYOo1pOSRAbL0n4506" class="qr">
+        <div data-page-node-id="bMyOAe4TvMtYHxvrtOc3v4" class="qrbox"><img data-page-node-id="PSZVGnTROVBqs212s9DdhP" alt="微信收款码" src="img/qr.jpg"></div>
+        <div data-page-node-id="r8rxfr2EAEvPQKBlF377it" class="cap"><!--pnid:oYXWt5aDePcc8oP21aOlBs-->微信扫码 · 概不退款<br data-page-node-id="H8IKSgUApo6O0zWNSlniR2"><!--pnid:53Z5k7N5P9Ayg8Zi9ykred-->也不提供服务</div>
+      </div>
+    </div>
+  </section>
+
+  <footer data-page-node-id="XmvUbytrNmTB5DRmGi1dCf">
+    <div data-page-node-id="m2YWiYs4reIirru2zlU1R1"><!--pnid:kuufewQ8QWpLhn2JGuMZiy-->本页面由本人熬夜制作 · 排版靠猜 · <b data-page-node-id="iC5Okdmg4vfKtJfbAbMbju"><!--pnid:eFqoLKFvAoZZqwmLfUGrDM-->版权所有但没人在乎</b></div>
+    <div data-page-node-id="66jBTpPeHN3iVu7KiK93e8" style="display:flex; align-items:center; gap:16px">
+      <span data-page-node-id="e9NrfcNWAGu2RzIGs2QEsQ" class="dots">
+        <i data-page-node-id="gBaA2xy7QW1oVxUouNjL8O" style="background:var(--pink)"></i><i data-page-node-id="WWTTrpq4Xo0sm1pUl2l2xM" style="background:var(--lime)"></i>
+        <i data-page-node-id="8O1zo610YFjAsyXNgvo5Z3" style="background:var(--cyan)"></i><i data-page-node-id="la9Yaqj2zs5twer76dFKnj" style="background:var(--violet)"></i>
+      </span>
+      <span data-page-node-id="ign0cVG1S3wi8XzCQhheuc"><!--pnid:arB4g74rUsQOglucMVpuUf-->最后更新 <b data-page-node-id="b5vyYDPkDR6d9OtShX2UwO"><!--pnid:k53aqwKKJchxqNVpG5wI2D-->懒得写</b><!--pnid:86g5ZhGG2oYbTHnUOywNBP--> · 沟通费 <b data-page-node-id="W36e9EhO3McG7hvPP5baMq"><!--pnid:vXKXsT5D81Gz6krX7mfKxX-->¥0.5</b></span>
+    </div>
+  </footer>
+</div>
+
+<div data-page-node-id="T1hZ67VvU507XZ17U4QnXl" aria-label="播放或暂停背景音乐" class="player" id="player" role="button" tabindex="0">
+  <div data-page-node-id="oe5TKga4LUcJEAXt2zfTJx" class="disc"></div>
+  <div data-page-node-id="0KkoL045TpqafZUXMBP956" class="eq"><i data-page-node-id="oE6TGrVLxodRrdjlxinCVb"></i><i data-page-node-id="yKuVZIOk1L2mVbOSFYt07F"></i><i data-page-node-id="uYFbes4C47T8ktNi0xHhq2"></i><i data-page-node-id="CQ5eM29NR9Mrxt38gRVtUe"></i></div>
+  <div data-page-node-id="ffznH3YhXnbut5Aih066Gt" class="ptitle"><b data-page-node-id="jnLe5ibJ9fXHJgCA8hrq7F"><!--pnid:OFi7BChQ4pkNsQ6Xn06gfY-->Базовый минимум</b><!--pnid:El7nRE7Y2cfGmNxpoGXR2H-->Sabi × MIA BOYKA</div>
+  <div data-page-node-id="l7xdno0OS1NGDuXuyCNpYc" class="pbar" id="pbar"></div>
+</div>
+<div data-page-node-id="2d7nHD7akg1Q5hsoxFKUdt" class="phint" id="phint"><!--pnid:zPszFhWCXtKHvk2sKMFiv0-->点一下，放首歌</div>
+<audio data-page-node-id="ZLKPzmdbhndGEpzYsvgyGg" id="bgm" loop preload="auto" src="music/bgm.mp3"></audio>
+
+<div data-page-node-id="MEf57IsSZ5G7rF668LnZyx" class="toast" id="toast"></div>
+
+<script data-page-node-id="BdNG1zWAvvWZiFZC0v8On1" data-pnid-children="O6h1tYnkHA8IDrm359shAb">
+  /* 时间 */
+  (function(){
+    const d = new Date(), p = n => String(n).padStart(2,'0');
+    document.getElementById('now').textContent = p(d.getHours()) + ':' + p(d.getMinutes());
+  })();
+
+  /* 鼠标聚光 */
+  const spot = document.getElementById('spot');
+  let raf = null;
+  document.addEventListener('pointermove', e=>{
+    if(raf) return;
+    raf = requestAnimationFrame(()=>{
+      document.body.style.setProperty('--mx', e.clientX + 'px');
+      document.body.style.setProperty('--my', e.clientY + 'px');
+      raf = null;
+    });
+  });
+
+  /* 滚动渐显与进度条：不支持观察器时直接展示内容 */
+  if(typeof window.IntersectionObserver === 'function'){
+    const io = new IntersectionObserver(es=>{
+      es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    },{threshold:.08});
+    document.querySelectorAll('.rev').forEach(el=>io.observe(el));
+
+    const bio = new IntersectionObserver(es=>{
+      es.forEach(e=>{
+        if(e.isIntersecting){
+          const f = e.target.querySelector('.fill');
+          if(f) setTimeout(()=>{ f.style.width = f.dataset.w; }, 160);
+          bio.unobserve(e.target);
+        }
+      });
+    },{threshold:.4});
+    document.querySelectorAll('.track').forEach(t=>bio.observe(t));
+  }else{
+    document.querySelectorAll('.rev').forEach(el=>el.classList.add('in'));
+    document.querySelectorAll('.track .fill').forEach(f=>{ f.style.width = f.dataset.w; });
+  }
+
+  /* 提示 */
+  const toast = document.getElementById('toast');
+  let tid;
+  function say(msg){
+    toast.innerHTML = msg;
+    toast.classList.add('on');
+    clearTimeout(tid);
+    tid = setTimeout(()=>toast.classList.remove('on'), 3600);
+  }
+
+  const msgs = [
+    '支付成功。由于系统懒散，回复将在 <b>3–5 个工作日</b>内发出。',
+    '支付失败：检测到您余额不足 <b>¥0.5</b>。建议先去打工。',
+    '<b>¥0.5</b> 已收到。备注：本单概不退款，也不提供服务。',
+    '系统提示：收款人正在睡觉，请勿打扰。',
+    '支付成功。您已获得一次抽象对话体验券，有效期：<b>看我心情</b>。',
+    '支付正在处理中……（其实没有在处理，我在看小说）',
+    '已记录您的付款意向。后续由我决定是否受理。'
+  ];
+  document.getElementById('payBtn').addEventListener('click', ()=>{
+    say(msgs[Math.floor(Math.random()*msgs.length)]);
+  });
+
+  /* 刷新精神状态 */
+  const lines = [
+    ['慢热。抽象。<b>懒散但高爆发</b>。', '别惹我，我爆发起来自己都怕。'],
+    ['目前处于<b>待机状态</b>。', '有事说事，没事我继续躺。'],
+    ['脑子常年超频，但<b>不常开机</b>。', '需要预热，预热期约三个月。'],
+    ['躺平不是放弃，是<b>省电</b>。', '省下来的电，都用在 deadline 前那六小时。'],
+    ['我说话抽象，但我<b>做人很直</b>。', '听不懂可以问，我不咬人。']
+  ];
+  let li = 0;
+  const lede = document.querySelector('.lede');
+  document.getElementById('refreshBtn').addEventListener('click', ()=>{
+    li = (li+1) % lines.length;
+    lede.innerHTML = lines[li][0] + '<br>' + lines[li][1];
+    say('精神状态已刷新 · 编号 <b>' + String(li+1).padStart(2,'0') + '</b>');
+  });
+
+  /* ===== 背景音乐 ===== */
+  const bgm = document.getElementById('bgm');
+  const player = document.getElementById('player');
+  const pbar = document.getElementById('pbar');
+  const phint = document.getElementById('phint');
+  bgm.volume = 0.62;
+
+  function markPlaying(on){
+    player.classList.toggle('playing', on);
+    player.setAttribute('aria-label', on ? '暂停背景音乐' : '播放背景音乐');
+    if(on) phint.classList.remove('on');
+  }
+  function toggleMusic(){
+    if(bgm.paused){
+      bgm.play().then(()=>markPlaying(true)).catch(()=>{
+        phint.textContent = '浏览器拦了，再点一下';
+        phint.classList.add('on');
+      });
+    }else{
+      bgm.pause();
+      markPlaying(false);
+    }
+  }
+  player.addEventListener('click', toggleMusic);
+  player.addEventListener('keydown', e=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleMusic(); }
+  });
+  bgm.addEventListener('play', ()=>markPlaying(true));
+  bgm.addEventListener('pause', ()=>markPlaying(false));
+  bgm.addEventListener('timeupdate', ()=>{
+    if(!bgm.duration) return;
+    pbar.style.width = (bgm.currentTime / bgm.duration * 100).toFixed(2) + '%';
+  });
+
+  /* 尝试自动播放，被拦就提示点击 */
+  const tryPlay = bgm.play();
+  if(tryPlay && typeof tryPlay.catch === 'function'){
+    tryPlay.catch(()=>{
+      phint.textContent = '点一下，放首歌';
+      phint.classList.add('on');
+      setTimeout(()=>phint.classList.remove('on'), 6000);
+    });
+  }
+</script>
+</body>
+</html>

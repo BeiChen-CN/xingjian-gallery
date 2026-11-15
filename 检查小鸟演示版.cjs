@@ -1,0 +1,12 @@
+const fs=require('fs'),vm=require('vm');
+const html=fs.readFileSync('第十周AI小组培训-小鸟演示版.html','utf8');
+const count=(html.match(/<section class="slide(?:\s[^"]*)?"[^>]*>/g)||[]).length;
+function el(){const set=new Set();return{classList:{toggle(k,force){const v=force===undefined?!set.has(k):force;v?set.add(k):set.delete(k);return v},add(k){set.add(k)},remove(k){set.delete(k)},contains(k){return set.has(k)}},setAttribute(k,v){this[k]=v},getAttribute(k){return this[k]},style:{},listeners:{},addEventListener(k,f){this.listeners[k]=f},click(){this.listeners.click?.()},matches(){return false}}}
+const slides=Array.from({length:count},el),els=Object.fromEntries(['prev','next','status','progress','full','motion'].map(k=>[k,el()])),keys={},location={hash:''},body=el();
+const document={body,querySelectorAll:()=>slides,getElementById:id=>els[id],addEventListener:(k,f)=>keys[k]=f,documentElement:{}};
+vm.runInNewContext(html.match(/<script>([\s\S]*?)<\/script>/)[1],{document,location,history:{replaceState(a,b,h){location.hash=h}},window:{scrollTo(){},addEventListener(){}}});
+if(count!==41||!els.status.textContent.startsWith('01 / 41')||!els.prev.disabled)throw Error('initial');els.next.click();if(!els.status.textContent.startsWith('02 / 41'))throw Error('next');keys.keydown({key:'End',target:{matches:()=>false},preventDefault(){}});if(!els.next.disabled||!els.status.textContent.startsWith('41 / 41'))throw Error('end');
+const button=el(),stage=el(),status=el();button.setAttribute('aria-pressed','false');const slide={querySelector:s=>({'.bird-button':button,'.bird-stage':stage,'.bird-status':status}[s])};let observer;class MutationObserver{constructor(fn){observer=fn}observe(){}}
+const reduced={matches:false,addEventListener(){}};const birdDoc={body,querySelectorAll:()=>[slide]};vm.runInNewContext(html.match(/<script data-bird>([\s\S]*?)<\/script>/)[1],{document:birdDoc,window:{matchMedia:()=>reduced},MutationObserver});
+button.click();if(button.getAttribute('aria-pressed')!=='true'||!stage.classList.contains('bird-is-flying'))throw Error('start');button.click();if(button.getAttribute('aria-pressed')!=='false'||stage.classList.contains('bird-is-flying'))throw Error('stop');button.click();body.classList.add('motion-off');observer();if(stage.classList.contains('bird-is-flying')||button.getAttribute('aria-pressed')!=='false')throw Error('global motion');
+console.log('41 slides: navigation, bird start/stop, global motion toggle passed');

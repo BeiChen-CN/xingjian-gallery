@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="闫炳欣的自我介绍。喜欢安静，也喜欢安静里那点细小的声响。">
+<meta name="theme-color" content="#B4DEFF">
+<title>闫炳欣 · 喜欢安静的人</title>
+<style>
+:root{
+  --sky-1:#B4DEFF;
+  --sky-2:#D2EBFF;
+  --sky-3:#EAF6FF;
+  --sky-4:#F7FCFF;
+  --ink:#0E2A3D;
+  --ink-soft:#2E5468;
+  --muted:#59798D;
+  --accent:#1677B3;
+  --accent-deep:#0D5A8A;
+  --line:rgba(255,255,255,.8);
+  --glass:rgba(255,255,255,.62);
+  --glass-strong:rgba(255,255,255,.8);
+  --shadow:0 30px 70px -42px rgba(10,70,110,.55);
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --serif:"Iowan Old Style","Palatino Linotype",Georgia,"Songti SC",serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:var(--sans);
+  color:var(--ink);
+  background:var(--sky-2);
+  line-height:1.85;
+  font-size:16px;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+body.locked{overflow:hidden;height:100vh;}
+button{font-family:inherit;cursor:pointer;}
+a{color:inherit;}
+::selection{background:rgba(22,119,179,.18);color:var(--accent-deep);}
+:focus-visible{outline:2px solid var(--accent-deep);outline-offset:4px;border-radius:6px;}
+
+/* ---------- 背景层 ---------- */
+.bg{
+  position:fixed;inset:0;z-index:-2;
+  background:linear-gradient(180deg,var(--sky-1) 0%,var(--sky-2) 28%,var(--sky-3) 62%,var(--sky-4) 100%);
+}
+.cloud{
+  position:fixed;z-index:-1;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,255,255,.95) 0%,rgba(255,255,255,.55) 42%,rgba(255,255,255,0) 72%);
+  filter:blur(18px);will-change:transform;
+}
+.c1{width:640px;height:640px;top:-180px;left:-140px;opacity:.95;animation:drift 26s ease-in-out infinite alternate;}
+.c2{width:520px;height:520px;top:14%;right:-170px;opacity:.8;animation:drift 32s ease-in-out infinite alternate-reverse;}
+.c3{width:760px;height:760px;bottom:-260px;left:16%;opacity:.6;animation:drift 38s ease-in-out infinite alternate;}
+.c4{width:400px;height:400px;top:52%;left:-120px;opacity:.55;animation:drift 30s ease-in-out infinite alternate-reverse;}
+@keyframes drift{
+  from{transform:translate3d(0,0,0) scale(1);}
+  to{transform:translate3d(40px,-30px,0) scale(1.06);}
+}
+.cursor-glow{
+  position:fixed;top:0;left:0;width:320px;height:320px;border-radius:50%;
+  pointer-events:none;z-index:0;display:none;
+  background:radial-gradient(circle,rgba(255,255,255,.7) 0%,rgba(255,255,255,.25) 40%,rgba(255,255,255,0) 68%);
+  will-change:transform;transform:translate3d(-500px,-500px,0);
+}
+@media (pointer:fine){.cursor-glow{display:block;}}
+
+/* ---------- 滚动进度 ---------- */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:80;pointer-events:none;}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent-deep),#4FB3E8);border-radius:0 3px 3px 0;}
+
+/* ---------- 导航 ---------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 26px;transition:background .4s ease,box-shadow .4s ease;
+}
+.nav.solid{background:rgba(255,255,255,.5);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 1px 0 rgba(255,255,255,.7);}
+.nav-name{font-size:15px;font-weight:650;letter-spacing:.2em;}
+.nav-links{display:flex;gap:6px;align-items:center;}
+.nav-links a{
+  text-decoration:none;font-size:13px;letter-spacing:.08em;color:var(--ink-soft);
+  padding:8px 13px;border-radius:999px;transition:background .25s ease,color .25s ease;
+}
+.nav-links a:hover{background:rgba(255,255,255,.7);color:var(--accent-deep);}
+
+/* ---------- 音乐按钮 ---------- */
+.sound-btn{
+  position:fixed;right:22px;bottom:22px;z-index:75;
+  display:inline-flex;align-items:center;gap:9px;
+  padding:11px 17px 11px 14px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.9);
+  background:rgba(255,255,255,.6);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  color:var(--ink-soft);font-size:12.5px;letter-spacing:.08em;
+  box-shadow:0 14px 30px -20px rgba(10,70,110,.6);
+  transition:background .25s ease,color .25s ease,transform .25s ease;
+}
+.sound-btn:hover{background:rgba(255,255,255,.85);color:var(--accent-deep);transform:translateY(-2px);}
+.bars{display:flex;align-items:flex-end;gap:3px;height:14px;width:14px;flex:none;}
+.bars i{display:block;width:3px;height:5px;border-radius:2px;background:var(--accent);transition:height .25s ease;}
+.playing .bars i{animation:bar 1.15s ease-in-out infinite;}
+.playing .bars i:nth-child(2){animation-delay:.16s;}
+.playing .bars i:nth-child(3){animation-delay:.32s;}
+@keyframes bar{0%,100%{height:4px;}50%{height:14px;}}
+
+/* ---------- 进入页 ---------- */
+.gate{
+  position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:24px;
+  background:linear-gradient(180deg,rgba(180,222,255,.9) 0%,rgba(234,246,255,.94) 100%);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  transition:opacity .9s ease,visibility .9s ease;
+}
+.gate.done{opacity:0;visibility:hidden;pointer-events:none;}
+.gate-card{
+  width:min(460px,100%);text-align:center;padding:46px 34px 34px;
+  background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.95);
+  border-radius:26px;box-shadow:0 40px 90px -50px rgba(10,70,110,.6);
+  animation:gateIn 1.1s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes gateIn{from{opacity:0;transform:translateY(16px) scale(.985);}to{opacity:1;transform:none;}}
+.gate-kicker{font-family:var(--serif);font-style:italic;font-size:12px;letter-spacing:.26em;color:var(--accent);margin:0 0 16px;}
+.gate-title{font-size:clamp(30px,6vw,40px);font-weight:750;letter-spacing:.04em;margin:0 0 14px;}
+.gate-sub{margin:0 0 28px;color:var(--ink-soft);font-size:15px;line-height:1.95;}
+.gate-actions{display:flex;flex-direction:column;gap:10px;}
+.gate-note{margin:22px 0 0;font-size:12px;color:var(--muted);letter-spacing:.02em;}
+
+.btn{
+  border:0;border-radius:999px;padding:15px 28px;font-size:15px;font-weight:600;letter-spacing:.02em;
+  transition:background .25s ease,color .25s ease,transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+}
+.btn.primary{background:var(--accent-deep);color:#fff;box-shadow:0 18px 34px -20px rgba(13,90,138,.95);}
+.btn.primary:hover{background:#0A4A72;transform:translateY(-2px);box-shadow:0 22px 40px -20px rgba(13,90,138,1);}
+.btn.ghost{background:transparent;color:var(--ink-soft);border:1px solid rgba(14,42,61,.16);}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent);background:rgba(255,255,255,.5);}
+
+/* ---------- 首屏 ---------- */
+.hero{
+  position:relative;min-height:100vh;min-height:100svh;
+  display:grid;place-items:center;padding:130px 24px 110px;overflow:hidden;
+}
+.hero-parallax{will-change:transform;}
+.hero-inner{
+  position:relative;z-index:2;text-align:center;max-width:900px;
+  transform:translate3d(var(--mx,0px),var(--my,0px),0);
+  transition:transform .6s cubic-bezier(.2,.8,.2,1);
+}
+.hero-eyebrow{
+  font-family:var(--serif);font-style:italic;font-size:13px;letter-spacing:.32em;
+  color:var(--accent);margin:0 0 22px;opacity:0;
+}
+.hero-title{
+  margin:0 0 26px;font-size:clamp(66px,15vw,168px);line-height:.98;letter-spacing:-.04em;font-weight:750;
+  background:linear-gradient(175deg,#0E2A3D 10%,#14506F 70%,#1C6E96 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  opacity:0;
+}
+.hero-sub{
+  margin:0 auto 26px;max-width:23em;font-size:clamp(17px,2.3vw,23px);line-height:1.95;
+  color:var(--ink-soft);letter-spacing:.01em;opacity:0;
+}
+.hero-meta{
+  margin:0;font-size:12.5px;letter-spacing:.24em;color:var(--muted);opacity:0;
+}
+.ready .hero-eyebrow{animation:rise .9s cubic-bezier(.2,.8,.2,1) .05s both;}
+.ready .hero-title{animation:rise 1.1s cubic-bezier(.2,.8,.2,1) .16s both;}
+.ready .hero-sub{animation:rise 1s cubic-bezier(.2,.8,.2,1) .38s both;}
+.ready .hero-meta{animation:rise 1s cubic-bezier(.2,.8,.2,1) .52s both;}
+@keyframes rise{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+
+.rings{position:absolute;inset:0;z-index:1;display:grid;place-items:center;pointer-events:none;}
+.ring{
+  position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.85);
+  width:min(74vmin,660px);height:min(74vmin,660px);
+  animation:ripple 9s ease-out infinite;
+}
+.ring:nth-child(2){animation-delay:3s;}
+.ring:nth-child(3){animation-delay:6s;}
+@keyframes ripple{
+  0%{transform:scale(.42);opacity:0;}
+  18%{opacity:.75;}
+  100%{transform:scale(1.05);opacity:0;}
+}
+.wave{position:absolute;left:-6%;right:-6%;bottom:-2px;height:120px;pointer-events:none;z-index:1;}
+.wave svg{width:106%;height:100%;animation:waveMove 15s ease-in-out infinite alternate;}
+@keyframes waveMove{from{transform:translateX(-2.2%);}to{transform:translateX(2.2%);}}
+.scroll-cue{
+  position:absolute;bottom:34px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  font-size:11px;letter-spacing:.28em;color:var(--muted);z-index:2;
+}
+.scroll-cue span{
+  display:block;width:1px;height:44px;background:linear-gradient(180deg,rgba(14,42,61,.5),rgba(14,42,61,0));
+  animation:cue 2.2s ease-in-out infinite;
+}
+@keyframes cue{0%,100%{transform:scaleY(.55);opacity:.5;transform-origin:top;}50%{transform:scaleY(1);opacity:1;transform-origin:top;}}
+
+/* ---------- 首屏动态卡片 ---------- */
+.hero-flex{display:flex;flex-direction:column;align-items:center;gap:44px;position:relative;z-index:2;}
+.live-card-wrap{perspective:1100px;}
+.live-card{
+  position:relative;width:min(320px,78vw);border-radius:22px;cursor:default;
+  background:rgba(255,255,255,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:0 30px 60px -32px rgba(14,42,61,.45),inset 0 1px 0 rgba(255,255,255,.9);
+  padding:22px 26px 20px;text-align:left;
+  transform-style:preserve-3d;
+  animation:floatCard 7s ease-in-out infinite;
+  transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  transition:transform .45s cubic-bezier(.2,.8,.2,1);
+}
+.live-card::before{
+  content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.65) 46%,transparent 62%);
+  background-size:220% 100%;background-position:105% 0;
+  animation:sheen 6.5s ease-in-out infinite;
+}
+@keyframes floatCard{0%,100%{translate:0 0;}50%{translate:0 -10px;}}
+@keyframes sheen{0%,18%{background-position:105% 0;}38%,100%{background-position:-65% 0;}}
+.lc-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.lc-dot{width:7px;height:7px;border-radius:50%;background:#2FA37C;box-shadow:0 0 0 4px rgba(47,163,124,.2);animation:pulseDot 2s ease-in-out infinite;}
+@keyframes pulseDot{0%,100%{box-shadow:0 0 0 3px rgba(47,163,124,.18);}50%{box-shadow:0 0 0 7px rgba(47,163,124,.05);}}
+.lc-status{font-size:11px;letter-spacing:.22em;color:var(--muted);}
+.lc-stage{height:86px;position:relative;}
+.lc-slide{
+  position:absolute;inset:0;opacity:0;transform:translateY(10px);
+  transition:opacity .55s ease,transform .55s ease;pointer-events:none;
+}
+.lc-slide.on{opacity:1;transform:translateY(0);}
+.lc-k{font-size:10.5px;letter-spacing:.26em;color:var(--accent);margin:0 0 8px;font-family:var(--serif);font-style:italic;}
+.lc-line{font-size:15.5px;line-height:1.75;color:var(--ink);margin:0;}
+.lc-bar{display:flex;gap:5px;margin-top:16px;}
+.lc-bar i{display:block;height:3px;flex:1;border-radius:2px;background:rgba(14,42,61,.14);transition:background .5s ease;}
+.lc-bar i.on{background:var(--accent);}
+@media (max-width:640px){ .hero-flex{gap:34px;} }
+
+/* ---------- 通用分区 ---------- */
+.section{position:relative;z-index:1;padding:104px 24px;scroll-margin-top:70px;}
+.wrap{width:min(1040px,100%);margin:0 auto;}
+.sec-head{margin-bottom:44px;}
+.sec-kicker{
+  font-family:var(--serif);font-size:12px;letter-spacing:.28em;color:var(--accent);
+  margin:0 0 14px;text-transform:uppercase;
+}
+.sec-head h2{
+  margin:0;font-size:clamp(27px,4vw,42px);line-height:1.32;letter-spacing:-.02em;font-weight:700;
+}
+.sec-head::after{content:"";display:block;width:46px;height:2px;background:var(--accent);opacity:.45;margin-top:22px;}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .85s ease,transform .85s cubic-bezier(.2,.8,.2,1);transition-delay:var(--d,0s);}
+.reveal.in{opacity:1;transform:none;}
+
+/* ---------- 关于 ---------- */
+.about-grid{display:grid;grid-template-columns:1.35fr .85fr;gap:26px;align-items:start;}
+.about-text p{margin:0 0 22px;font-size:clamp(16px,1.8vw,18px);line-height:2.1;color:var(--ink-soft);}
+.about-text p:last-child{margin-bottom:0;}
+.about-text strong{color:var(--ink);font-weight:650;}
+.card{
+  background:var(--glass);border:1px solid var(--line);border-radius:22px;
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  box-shadow:var(--shadow);
+  transition:transform .38s cubic-bezier(.2,.8,.2,1),box-shadow .38s ease,background .38s ease;
+}
+.card:hover{transform:translateY(-6px);background:rgba(255,255,255,.78);box-shadow:0 38px 80px -46px rgba(10,70,110,.7);}
+.id-card{padding:26px;}
+.id-top{display:flex;align-items:center;gap:14px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,.85);margin-bottom:16px;}
+.id-avatar{
+  width:52px;height:52px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:linear-gradient(160deg,#DCEFFF,#B9DDF8);color:var(--accent-deep);
+  font-size:20px;font-weight:700;border:1px solid rgba(255,255,255,.9);
+}
+.id-name{font-size:17px;font-weight:700;letter-spacing:.06em;line-height:1.4;}
+.id-role{font-size:12.5px;color:var(--muted);letter-spacing:.06em;}
+.id-list{list-style:none;margin:0;padding:0;display:grid;gap:12px;}
+.id-list li{display:flex;gap:10px;font-size:13.5px;color:var(--ink-soft);line-height:1.7;}
+.id-list b{flex:none;width:44px;font-weight:500;color:var(--muted);font-size:12.5px;letter-spacing:.06em;}
+
+/* ---------- 三个词 ---------- */
+.cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.trait{padding:30px 26px;}
+.trait-no{font-family:var(--serif);font-size:12px;letter-spacing:.2em;color:var(--accent);margin:0 0 16px;}
+.trait h3{margin:0 0 12px;font-size:23px;letter-spacing:.06em;font-weight:700;}
+.trait p{margin:0;font-size:14.5px;line-height:1.95;color:var(--ink-soft);}
+
+/* ---------- 安静 ---------- */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:44px;}
+.col-title{
+  font-size:14px;letter-spacing:.14em;color:var(--accent-deep);margin:0 0 6px;font-weight:650;
+}
+.col-sub{font-size:13px;color:var(--muted);margin:0 0 18px;}
+.list{list-style:none;margin:0;padding:0;}
+.list li{
+  position:relative;padding:15px 0 15px 28px;font-size:15.5px;color:var(--ink-soft);
+  border-bottom:1px solid rgba(255,255,255,.75);
+  transition:padding-left .3s ease,color .3s ease;
+}
+.list li::before{
+  content:"";position:absolute;left:2px;top:23px;width:7px;height:7px;border-radius:50%;
+  background:var(--accent);opacity:.55;transition:opacity .3s ease,transform .3s ease;
+}
+.list li:hover{padding-left:34px;color:var(--ink);}
+.list li:hover::before{opacity:1;transform:scale(1.25);}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px;}
+.stat{
+  padding:28px 22px;text-align:center;border-radius:20px;
+  background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.85);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+.stat b{display:block;font-size:clamp(34px,5vw,46px);line-height:1.15;font-weight:750;letter-spacing:-.03em;color:var(--accent-deep);}
+.stat b small{font-size:.42em;font-weight:600;margin-left:4px;letter-spacing:0;}
+.stat span{display:block;margin-top:8px;font-size:12.5px;color:var(--muted);letter-spacing:.1em;}
+
+/* ---------- 片段 ---------- */
+.timeline{position:relative;padding-left:34px;}
+.timeline::before{
+  content:"";position:absolute;left:5px;top:10px;bottom:10px;width:1px;
+  background:linear-gradient(180deg,rgba(22,119,179,.45),rgba(22,119,179,.05));
+}
+.tl-item{position:relative;padding-bottom:34px;}
+.tl-item:last-child{padding-bottom:0;}
+.tl-item::before{
+  content:"";position:absolute;left:-33px;top:9px;width:9px;height:9px;border-radius:50%;
+  background:#fff;border:2px solid var(--accent);
+}
+.tl-no{font-family:var(--serif);font-size:11.5px;letter-spacing:.22em;color:var(--accent);display:block;margin-bottom:6px;}
+.tl-item h3{margin:0 0 6px;font-size:17.5px;font-weight:650;letter-spacing:.01em;}
+.tl-item p{margin:0;font-size:15px;line-height:1.9;color:var(--ink-soft);}
+
+/* ---------- 现在 ---------- */
+.cards-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.now-card{padding:24px 22px;}
+.now-card h3{
+  margin:0 0 12px;font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:650;
+}
+.now-card p{margin:0;font-size:14.5px;line-height:1.9;color:var(--ink-soft);}
+
+/* ---------- 联系 ---------- */
+.contact{padding-bottom:120px;}
+.contact-card{
+  text-align:center;padding:66px 30px 58px;border-radius:30px;
+  background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.95);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  box-shadow:0 44px 90px -54px rgba(10,70,110,.65);
+}
+.contact-card h2{margin:0 0 16px;font-size:clamp(26px,3.8vw,38px);letter-spacing:-.02em;font-weight:700;}
+.contact-card > p{margin:0 auto;max-width:30em;color:var(--ink-soft);font-size:15.5px;line-height:2;}
+.mail{
+  display:inline-block;margin:26px 0 0;font-size:clamp(18px,2.6vw,25px);
+  color:var(--accent-deep);text-decoration:none;letter-spacing:-.01em;
+  border-bottom:1px solid rgba(13,90,138,.3);padding-bottom:5px;
+  transition:border-color .25s ease,color .25s ease,transform .25s ease;
+}
+.mail:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px);}
+.tiny{margin:18px 0 0;font-size:12px;color:var(--muted);letter-spacing:.04em;}
+
+footer{
+  position:relative;z-index:1;padding:34px 24px 46px;text-align:center;
+  font-size:12.5px;color:var(--muted);letter-spacing:.08em;
+  border-top:1px solid rgba(255,255,255,.7);
+}
+footer span{display:block;margin-top:6px;opacity:.8;}
+
+/* ---------- 响应式 ---------- */
+@media (max-width:860px){
+  .about-grid{grid-template-columns:1fr;}
+  .two-col{grid-template-columns:1fr;gap:34px;}
+  .cards-3{grid-template-columns:1fr;}
+  .cards-4{grid-template-columns:1fr 1fr;}
+  .section{padding:78px 20px;}
+  .nav-links{display:none;}
+  .hero{padding:110px 20px 90px;}
+  .scroll-cue{display:none;}
+}
+@media (max-width:520px){
+  .cards-4{grid-template-columns:1fr;}
+  .stats{grid-template-columns:1fr;gap:12px;}
+  .stat{padding:20px;}
+  .sound-btn{padding:11px;border-radius:50%;}
+  .sound-btn .sm-text{display:none;}
+  .gate-card{padding:36px 24px 28px;}
+  .contact-card{padding:44px 22px 40px;}
+  .hero-title{letter-spacing:-.05em;}
+}
+@supports not ((-webkit-background-clip:text) or (background-clip:text)){
+  .hero-title{color:var(--ink);-webkit-text-fill-color:var(--ink);}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *{animation:none !important;transition:none !important;}
+  .reveal{opacity:1;transform:none;}
+  .hero-eyebrow,.hero-title,.hero-sub,.hero-meta{opacity:1;}
+}
+</style>
+<link rel="stylesheet" href="返回展厅.css">
+<script src="入场过渡.js"></script>
+</head>
+<body class="locked">
+<a class="exhibition-return" href="../学员AI作品展.html" aria-label="返回作品展首页">← 返回作品展首页</a>
+
+<div class="bg" aria-hidden="true"></div>
+<div class="cloud c1" aria-hidden="true"></div>
+<div class="cloud c2" aria-hidden="true"></div>
+<div class="cloud c3" aria-hidden="true"></div>
+<div class="cloud c4" aria-hidden="true"></div>
+<div class="cursor-glow" id="glow" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <p class="gate-kicker">a quiet place</p>
+    <h1 class="gate-title">闫炳欣</h1>
+    <p class="gate-sub">这个页面有一首很轻的背景音乐。<br>戴上耳机，会更安静一点。</p>
+    <div class="gate-actions">
+      <button class="btn primary" id="enterSound">带音乐进入</button>
+      <button class="btn ghost" id="enterSilent">安静地看看</button>
+    </div>
+    <p class="gate-note">音乐由页面实时合成，不加载任何音频文件</p>
+  </div>
+</div>
+
+<nav class="nav" id="nav">
+  <span class="nav-name">闫炳欣</span>
+  <div class="nav-links">
+    <a href="#about">关于</a>
+    <a href="#traits">三个词</a>
+    <a href="#quiet">安静</a>
+    <a href="#moments">片段</a>
+    <a href="#contact">联系</a>
+  </div>
+</nav>
+
+<button class="sound-btn" id="soundBtn" aria-pressed="false" aria-label="开启背景音乐">
+  <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+  <span class="sm-text">音乐 关</span>
+</button>
+
+<main>
+
+  <section class="hero" id="top">
+    <div class="rings" aria-hidden="true"><span class="ring"></span><span class="ring"></span><span class="ring"></span></div>
+    <div class="hero-parallax" id="heroParallax">
+      <div class="hero-flex">
+        <div class="hero-inner" id="heroInner">
+          <p class="hero-eyebrow">hello, i'm</p>
+          <h1 class="hero-title">闫炳欣</h1>
+          <p class="hero-sub">喜欢安静，也喜欢安静里那点细小的声响。</p>
+          <p class="hero-meta">写点东西 · 听很多歌 · 住在有窗的房间里</p>
+        </div>
+        <div class="live-card-wrap">
+          <div class="live-card" id="liveCard">
+            <div class="lc-head">
+              <span class="lc-dot"></span>
+              <span class="lc-status">NOW · 此刻的我</span>
+            </div>
+            <div class="lc-stage" id="lcStage">
+              <div class="lc-slide on">
+                <p class="lc-k">mood</p>
+                <p class="lc-line">今天想安静一会儿，耳机里的音乐刚好够用。</p>
+              </div>
+              <div class="lc-slide">
+                <p class="lc-k">playing</p>
+                <p class="lc-line">深夜的一段剧情，不打攻略，自己慢慢走完。</p>
+              </div>
+              <div class="lc-slide">
+                <p class="lc-k">craving</p>
+                <p class="lc-line">一口热的。好吃的店不用大，找到就是缘分。</p>
+              </div>
+              <div class="lc-slide">
+                <p class="lc-k">listening</p>
+                <p class="lc-line">没有歌词的钢琴，混着窗外偶尔经过的声音。</p>
+              </div>
+            </div>
+            <div class="lc-bar" id="lcBar"><i class="on"></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wave" aria-hidden="true">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path d="M0,64 C160,112 320,16 480,54 C640,92 800,22 960,56 C1120,90 1300,34 1440,62 L1440,120 L0,120 Z" fill="rgba(255,255,255,.55)"/>
+        <path d="M0,82 C180,120 340,44 520,74 C700,104 860,44 1040,72 C1220,100 1360,60 1440,76 L1440,120 L0,120 Z" fill="rgba(255,255,255,.75)"/>
+      </svg>
+    </div>
+    <div class="scroll-cue"><span></span>往下</div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-kicker">01 — about</p>
+        <h2>关于我</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>我是<strong>闫炳欣</strong>。如果非要挑一个词来形容自己，大概是「安静」。<br>不是不会说话，是更习惯先听完；不是在人群里消失，是更愿意站在稍远一点的地方看。</p>
+          <p>安静对我来说不是空白。它是我把一件事想清楚、把一段音乐听完、把一本书翻到最后一页的方式。热闹让我兴奋，安静让我回到自己。</p>
+          <p>我不太擅长自我介绍，因为我不觉得人是几个标签。但真要说的话：我认真、慢热、记性不错，答应过的事会一直放在心上。</p>
+        </div>
+        <aside class="card id-card reveal" style="--d:.12s">
+          <div class="id-top">
+            <div class="id-avatar">闫</div>
+            <div>
+              <div class="id-name">闫炳欣</div>
+              <div class="id-role">a quiet person</div>
+            </div>
+          </div>
+          <ul class="id-list">
+            <li><b>坐标</b><span>一座有窗、有风、不算太吵的城市</span></li>
+            <li><b>在做</b><span>和文字有关的事，偶尔也做点手工</span></li>
+            <li><b>状态</b><span>安静，但在认真生活</span></li>
+            <li><b>偏爱</b><span>深夜戴上耳机，一个人打完一段剧情</span></li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="traits">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-kicker">02 — traits</p>
+        <h2>三个词，先这样介绍自己</h2>
+      </div>
+      <div class="cards-3">
+        <article class="card trait reveal">
+          <p class="trait-no">01</p>
+          <h3>安静</h3>
+          <p>人多的场合我会省着说话，但跟我熟起来的人都知道，我话其实不少。只是要先觉得安全。</p>
+        </article>
+        <article class="card trait reveal" style="--d:.1s">
+          <p class="trait-no">02</p>
+          <h3>专注</h3>
+          <p>一件事开始了就想做完。可以坐很久，也可以反复改到自己满意，哪怕没人看得出来差别。</p>
+        </article>
+        <article class="card trait reveal" style="--d:.2s">
+          <p class="trait-no">03</p>
+          <h3>慢热</h3>
+          <p>第一面可能有点淡，第三面才开始像本人。别急，我不太会走，只是走得慢一点。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="quiet">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-kicker">03 — quiet</p>
+        <h2>我喜欢安静，但不是空白</h2>
+      </div>
+      <div class="two-col">
+        <div class="reveal">
+          <p class="col-title">安静的清单</p>
+          <p class="col-sub">这些时刻，我会觉得世界刚刚好。</p>
+          <ul class="list">
+            <li>清晨六点的光，和没什么人的街道</li>
+            <li>戴上耳机之后，世界自动降噪</li>
+            <li>纸质书翻页的声音</li>
+            <li>下过雨的空气，和湿掉的鞋边</li>
+            <li>一个人吃饭，不用找话题</li>
+            <li>把歌单按天气和心情重新排一遍</li>
+          </ul>
+        </div>
+        <div class="reveal" style="--d:.12s">
+          <p class="col-title">安静给我的</p>
+          <p class="col-sub">它不空，里面装得下很多东西。</p>
+          <ul class="list">
+            <li>能听见自己真正的想法</li>
+            <li>可以把一件小事做到很细</li>
+            <li>记得住别人随口说过的话</li>
+            <li>在混乱里先稳住，再开口</li>
+            <li>读得进长文章，看得完长电影</li>
+            <li>一个人待着，也不会觉得空</li>
+          </ul>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat reveal">
+          <b><span data-count="7">0</span></b>
+          <span>个 · 自己排的歌单</span>
+        </div>
+        <div class="stat reveal" style="--d:.1s">
+          <b><span data-count="1">0</span></b>
+          <span>个 · 常坐的靠窗位置</span>
+        </div>
+        <div class="stat reveal" style="--d:.2s">
+          <b><span data-count="1">0</span></b>
+          <span>个 · 认证吃货</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="moments">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-kicker">04 — moments</p>
+        <h2>一些片段</h2>
+      </div>
+      <div class="timeline">
+        <div class="tl-item reveal">
+          <span class="tl-no">01</span>
+          <h3>学会在吵闹的地方给自己留一小块安静</h3>
+          <p>不是躲开，是戴上耳机，把注意力收回来。后来发现，这大概是我最有用的一项技能。</p>
+        </div>
+        <div class="tl-item reveal">
+          <span class="tl-no">02</span>
+          <h3>第一次一个人去看电影</h3>
+          <p>买票的时候有点犹豫，散场的时候觉得挺好的。原来一个人做很多事，都不需要理由。</p>
+        </div>
+        <div class="tl-item reveal">
+          <span class="tl-no">03</span>
+          <h3>把喜欢的歌整理成七个歌单</h3>
+          <p>按天气分，按心情分，也按「适合走路」和「适合发呆」分。有人问我要过，那一下挺开心。</p>
+        </div>
+        <div class="tl-item reveal">
+          <span class="tl-no">04</span>
+          <h3>开始每天写三行字</h3>
+          <p>不写给别人看，也不打算写成什么。写着写着，日子就有了可以回看的地方。</p>
+        </div>
+        <div class="tl-item reveal">
+          <span class="tl-no">05</span>
+          <h3>试着在会议上多说一句话</h3>
+          <p>声音有点抖，但说完了。后来那句话被采纳了。安静的人也可以有立场，只是需要多一点准备。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="now">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-kicker">05 — now</p>
+        <h2>最近的抽屉</h2>
+      </div>
+      <div class="cards-4">
+        <article class="card now-card reveal">
+          <h3>在做</h3>
+          <p>一份和文字有关的工作。最近在改一个方案，第四版了，还是想再顺一遍。</p>
+        </article>
+        <article class="card now-card reveal" style="--d:.08s">
+          <h3>在学</h3>
+          <p>怎么把话说短。还有一点吉他，目前只会四个和弦，但够弹一首喜欢的歌。</p>
+        </article>
+        <article class="card now-card reveal" style="--d:.16s">
+          <h3>在听</h3>
+          <p>钢琴、环境音，偶尔后摇。写东西的时候听没有歌词的那种，不然会分心。</p>
+        </article>
+        <article class="card now-card reveal" style="--d:.24s">
+          <h3>在读</h3>
+          <p>《瓦尔登湖》第三遍。每次读到的句子都不一样，大概是我变了。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section contact" id="contact">
+    <div class="wrap">
+      <div class="contact-card reveal">
+        <p class="sec-kicker">06 — say hi</p>
+        <h2>如果你也喜欢安静</h2>
+        <p>或者只是想找个人，把一件没处说的事慢慢讲完。<br>写信给我就好，不用想开场白。</p>
+        <a class="mail" href="mailto:2937416503@qq.com">2937416503@qq.com</a>
+        <p class="tiny">我回消息可能不快，但会认真回</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  闫炳欣 · 2026
+  <span>这个页面会一直放着一首很轻的音乐，右下角可以关掉</span>
+</footer>
+
+<noscript>
+  <style>
+    .gate{display:none !important;}
+    body.locked{overflow:auto;height:auto;}
+    .hero-eyebrow,.hero-title,.hero-sub,.hero-meta,.reveal{opacity:1 !important;transform:none !important;animation:none !important;}
+  </style>
+</noscript>
+
+<script>
+(function(){
+  "use strict";
+
+  var html = document.documentElement;
+  var body = document.body;
+  var reduce = false;
+  if(window.matchMedia){
+    reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  /* ========== 背景音乐：实时合成的环境音 ========== */
+  var Ambient = (function(){
+    var ctx = null, master = null, filt = null, timer = null, on = false;
+    var pauseTimer = null, stateTask = Promise.resolve();
+
+    function cancelPause(){
+      if(pauseTimer !== null) clearTimeout(pauseTimer);
+      pauseTimer = null;
+    }
+
+    function syncContext(){
+      stateTask = stateTask.then(function(){
+        if(!ctx || ctx.state === "closed") return;
+        var shouldRun = !document.hidden && (on || pauseTimer !== null);
+        if(shouldRun && ctx.state === "suspended") return ctx.resume();
+        if(!shouldRun && ctx.state === "running") return ctx.suspend();
+      }).catch(function(){});
+    }
+
+    function makeImpulse(seconds, decay){
+      var rate = ctx.sampleRate;
+      var len = Math.floor(rate * seconds);
+      var buf = ctx.createBuffer(2, len, rate);
+      for(var c = 0; c < 2; c++){
+        var data = buf.getChannelData(c);
+        for(var i = 0; i < len; i++){
+          data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+        }
+      }
+      return buf;
+    }
+
+    function build(){
+      var AC = window.AudioContext || window.webkitAudioContext;
+      ctx = new AC();
+
+      master = ctx.createGain();
+      master.gain.value = 0;
+      master.connect(ctx.destination);
+
+      filt = ctx.createBiquadFilter();
+      filt.type = "lowpass";
+      filt.frequency.value = 2400;
+      filt.Q.value = 0.25;
+
+      var dry = ctx.createGain();
+      dry.gain.value = 0.42;
+      var conv = ctx.createConvolver();
+      conv.buffer = makeImpulse(5.6, 3.1);
+      var wet = ctx.createGain();
+      wet.gain.value = 1.2;
+
+      filt.connect(dry); dry.connect(master);
+      filt.connect(conv); conv.connect(wet); wet.connect(master);
+
+      /* 空灵音垫：宽间距高音区叠音，像远处的高原 */
+      var chord = [220, 329.63, 493.88, 587.33, 659.25, 987.77];
+      for(var i = 0; i < chord.length; i++){
+        addVoice(chord[i], i);
+      }
+      timer = setInterval(chime, 6500);
+    }
+
+    function addVoice(freq, idx){
+      var osc = ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      osc.detune.value = Math.random() * 8 - 4;
+
+      var g = ctx.createGain();
+      var peak = 0.03 - idx * 0.0032;
+      /* 缓慢浮起，像雾气漫开，而不是瞬间响 */
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.linearRampToValueAtTime(peak, ctx.currentTime + 5 + Math.random() * 4);
+
+      var lfo = ctx.createOscillator();
+      lfo.frequency.value = 0.02 + Math.random() * 0.04;
+      var lg = ctx.createGain();
+      lg.gain.value = peak * 0.5;
+      lfo.connect(lg);
+      lg.connect(g.gain);
+
+      osc.connect(g);
+      g.connect(filt);
+      osc.start();
+      lfo.start();
+    }
+
+    function chime(){
+      if(!ctx || !on) return;
+      /* 高音区五声音阶，尾音更长更远，偶尔落一个五度双音 */
+      var notes = [783.99, 880, 987.77, 1174.66, 1318.51];
+      var f = notes[Math.floor(Math.random() * notes.length)];
+      var t = ctx.currentTime;
+      dropNote(f, t, 0.026, 5.4);
+      if(Math.random() < 0.35){
+        dropNote(f * 1.5, t + 0.28, 0.015, 5.8);
+      }
+    }
+
+    function dropNote(freq, t, peak, dur){
+      var osc = ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      var g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(peak, t + 0.12);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      osc.connect(g);
+      g.connect(filt);
+      osc.start(t);
+      osc.stop(t + dur + 0.3);
+    }
+
+    function fade(to, sec){
+      if(!master) return;
+      var t = ctx.currentTime;
+      master.gain.cancelScheduledValues(t);
+      master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), t);
+      master.gain.linearRampToValueAtTime(to, t + sec);
+    }
+
+    return {
+      start: function(){
+        try{
+          if(!ctx) build();
+          cancelPause();
+          on = true;
+          fade(0.6, 3);
+          syncContext();
+        }catch(e){
+          on = false;
+        }
+        return on;
+      },
+      stop: function(){
+        cancelPause();
+        on = false;
+        fade(0, 0.9);
+        if(ctx && ctx.state === "running" && !document.hidden){
+          pauseTimer = setTimeout(function(){
+            pauseTimer = null;
+            syncContext();
+          }, 950);
+        }else{
+          syncContext();
+        }
+        return on;
+      },
+      toggle: function(){
+        return on ? this.stop() : this.start();
+      },
+      isOn: function(){ return on; },
+      hide: function(){
+        cancelPause();
+        syncContext();
+      },
+      show: function(){
+        if(on) syncContext();
+      }
+    };
+  })();
+
+  var soundBtn = document.getElementById("soundBtn");
+  var smText = soundBtn.querySelector(".sm-text");
+
+  function syncSound(isOn){
+    soundBtn.classList.toggle("playing", !!isOn);
+    soundBtn.setAttribute("aria-pressed", isOn ? "true" : "false");
+    soundBtn.setAttribute("aria-label", isOn ? "关闭背景音乐" : "开启背景音乐");
+    smText.textContent = isOn ? "音乐 开" : "音乐 关";
+  }
+
+  soundBtn.addEventListener("click", function(){
+    syncSound(Ambient.toggle());
+  });
+
+  document.addEventListener("visibilitychange", function(){
+    if(document.hidden) Ambient.hide();
+    else Ambient.show();
+  });
+
+  /* ========== 进入页 ========== */
+  var gate = document.getElementById("gate");
+  var gateClosed = false;
+
+  function closeGate(){
+    if(gateClosed) return;
+    gateClosed = true;
+    gate.classList.add("done");
+    body.classList.remove("locked");
+    html.classList.add("ready");
+    setTimeout(function(){
+      if(gate && gate.parentNode) gate.parentNode.removeChild(gate);
+    }, 1000);
+  }
+
+  document.getElementById("enterSound").addEventListener("click", function(){
+    syncSound(Ambient.start());
+    closeGate();
+  });
+  document.getElementById("enterSilent").addEventListener("click", function(){
+    closeGate();
+  });
+
+  /* ========== 滚动：进度、视差、导航 ========== */
+  var progressBar = document.getElementById("progressBar");
+  var heroParallax = document.getElementById("heroParallax");
+  var heroInner = document.getElementById("heroInner");
+  var nav = document.getElementById("nav");
+  var clouds = document.querySelectorAll(".cloud");
+  var ticking = false;
+
+  function onScroll(){
+    ticking = false;
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    progressBar.style.width = (max > 0 ? (y / max) * 100 : 0) + "%";
+    nav.classList.toggle("solid", y > 40);
+    if(reduce) return;
+    for(var i = 0; i < clouds.length; i++){
+      clouds[i].style.transform = "translate3d(0," + (y * (0.04 + i * 0.022)).toFixed(1) + "px,0)";
+    }
+    if(y < window.innerHeight * 1.4){
+      heroParallax.style.transform = "translate3d(0," + (y * 0.26).toFixed(1) + "px,0)";
+      heroInner.style.opacity = Math.max(0, 1 - y / (window.innerHeight * 0.95)).toFixed(3);
+    }
+  }
+
+  window.addEventListener("scroll", function(){
+    if(!ticking){
+      ticking = true;
+      requestAnimationFrame(onScroll);
+    }
+  }, {passive:true});
+  window.addEventListener("resize", onScroll);
+  onScroll();
+
+  /* ========== 鼠标：柔光 + 首屏微视差 ========== */
+  var glow = document.getElementById("glow");
+  var tgX = 0, tgY = 0, gx = 0, gy = 0, glowRunning = false;
+
+  document.addEventListener("mousemove", function(e){
+    tgX = e.clientX;
+    tgY = e.clientY;
+    if(!glowRunning){
+      glowRunning = true;
+      requestAnimationFrame(glowLoop);
+    }
+    if(!reduce){
+      var dx = e.clientX / window.innerWidth - 0.5;
+      var dy = e.clientY / window.innerHeight - 0.5;
+      heroInner.style.setProperty("--mx", (dx * 16).toFixed(1) + "px");
+      heroInner.style.setProperty("--my", (dy * 14).toFixed(1) + "px");
+    }
+  });
+
+  function glowLoop(){
+    gx += (tgX - gx) * 0.12;
+    gy += (tgY - gy) * 0.12;
+    glow.style.transform = "translate3d(" + (gx - 160).toFixed(1) + "px," + (gy - 160).toFixed(1) + "px,0)";
+    if(Math.abs(tgX - gx) > 0.6 || Math.abs(tgY - gy) > 0.6){
+      requestAnimationFrame(glowLoop);
+    }else{
+      glowRunning = false;
+    }
+  }
+
+  /* ========== 首屏动态卡片：轮播 + 3D 倾斜 ========== */
+  var liveCard = document.getElementById("liveCard");
+  var lcSlides = liveCard ? document.getElementById("lcStage").children : [];
+  var lcDots = liveCard ? document.getElementById("lcBar").children : [];
+  var lcIdx = 0, lcTimer = null;
+
+  function lcShow(i){
+    for(var s = 0; s < lcSlides.length; s++){
+      lcSlides[s].classList.toggle("on", s === i);
+      if(lcDots[s]) lcDots[s].classList.toggle("on", s === i);
+    }
+  }
+
+  function lcNext(){
+    lcIdx = (lcIdx + 1) % lcSlides.length;
+    lcShow(lcIdx);
+  }
+
+  if(liveCard && lcSlides.length){
+    if(!reduce) lcTimer = setInterval(lcNext, 3800);
+
+    liveCard.addEventListener("mouseenter", function(){ if(lcTimer){ clearInterval(lcTimer); lcTimer = null; } });
+    liveCard.addEventListener("mouseleave", function(){
+      liveCard.style.setProperty("--rx", "0deg");
+      liveCard.style.setProperty("--ry", "0deg");
+      if(!reduce && !lcTimer) lcTimer = setInterval(lcNext, 3800);
+    });
+
+    if(!reduce && window.matchMedia && !window.matchMedia("(pointer: coarse)").matches){
+      liveCard.addEventListener("mousemove", function(e){
+        var r = this.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width - 0.5;
+        var py = (e.clientY - r.top) / r.height - 0.5;
+        this.style.setProperty("--ry", (px * 10).toFixed(2) + "deg");
+        this.style.setProperty("--rx", (-py * 8).toFixed(2) + "deg");
+      });
+    }
+  }
+
+  /* ========== 入场与数字 ========== */
+  var revealEls = document.querySelectorAll(".reveal");
+
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          en.target.classList.add("in");
+          io.unobserve(en.target);
+        }
+      });
+    }, {threshold: 0.12, rootMargin: "0px 0px -6% 0px"});
+
+    Array.prototype.forEach.call(revealEls, function(el){ io.observe(el); });
+
+    var cio = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          runCount(en.target);
+          cio.unobserve(en.target);
+        }
+      });
+    }, {threshold: 0.5});
+
+    Array.prototype.forEach.call(document.querySelectorAll("[data-count]"), function(el){
+      cio.observe(el);
+    });
+  }else{
+    Array.prototype.forEach.call(revealEls, function(el){ el.classList.add("in"); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-count]"), function(el){
+      el.textContent = el.getAttribute("data-count");
+    });
+  }
+
+  function runCount(el){
+    var target = parseFloat(el.getAttribute("data-count")) || 0;
+    if(reduce){ el.textContent = target; return; }
+    var dur = 1500, t0 = null;
+    function step(ts){
+      if(t0 === null) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased);
+      if(p < 1) requestAnimationFrame(step);
+      else el.textContent = target;
+    }
+    requestAnimationFrame(step);
+  }
+})();
+</script>
+</body>
+</html>

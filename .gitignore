@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.skill-review/
+作品数据.lock
+.导入-*/
+*.tmp-*
+.DS_Store
+Thumbs.db
+node_modules/
