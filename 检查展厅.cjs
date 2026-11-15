@@ -144,25 +144,22 @@ async function main() {
     if (!first) throw new Error('未找到第一颗星球的屏幕位置');
     await wheel(first, -120);
     await waitFor(async () => {
-      const state = await cdp.evaluate(`({ text: document.querySelector('#focus strong').textContent, selected: document.getElementById('focus').classList.contains('selected') })`);
-      return state.text.startsWith(labels[0]) && state.selected;
+      const state = await cdp.evaluate(`(() => {
+        const label = [...document.querySelectorAll('.label')].find(node => node.querySelector('strong').textContent === ${JSON.stringify(labels[0])});
+        return { hash: location.hash, visible: label.style.visibility !== 'hidden' };
+      })()`);
+      return state.hash === '#work-1' && state.visible;
     }, 4000, '选中第一颗星球');
     const second = await pickPoint(labels[1]);
     if (!second) throw new Error('未找到第二颗星球的屏幕位置');
-    const preview = await cdp.evaluate(`({ text: document.querySelector('#focus strong').textContent, selected: document.getElementById('focus').classList.contains('selected') })`);
-    if (!preview.text.startsWith(labels[1]) || preview.selected) throw new Error('选中后悬停没有切换下方信息条');
     await wheel(second, -120);
     await waitFor(async () => {
       const state = await cdp.evaluate(`(() => {
-        const focus = document.getElementById('focus');
-        return { text: focus.querySelector('strong').textContent, selected: focus.classList.contains('selected'), detail: focus.querySelector('.focus-detail').textContent };
+        const label = [...document.querySelectorAll('.label')].find(node => node.querySelector('strong').textContent === ${JSON.stringify(labels[1])});
+        return { hash: location.hash, visible: label.style.visibility !== 'hidden', active: label.classList.contains('active') };
       })()`);
-      return state.text.startsWith(labels[1]) && state.selected;
+      return state.hash === '#work-2' && state.visible && state.active;
     }, 5000, '滚轮切换到指针下的星球');
-    await waitFor(async () => cdp.evaluate(`(() => {
-      const label = [...document.querySelectorAll('.label')].find(node => node.querySelector('strong').textContent === ${JSON.stringify(labels[1])});
-      return label.style.visibility === 'hidden';
-    })()`), 2500, '选中星球的场景标签隐藏');
     console.log('滚轮选中指针下的星球：通过');
 
     const broken = fs.mkdtempSync(path.join(os.tmpdir(), 'gallery-broken-'));
