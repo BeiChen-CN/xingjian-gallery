@@ -13,6 +13,11 @@
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', prepareReturn, { once: true });
   else prepareReturn();
+  const counter = document.createElement('script');
+  counter.async = true;
+  counter.src = 'https://gc.zgo.at/count.js';
+  counter.setAttribute('data-goatcounter', 'https://jiangbeichen.goatcounter.com/count');
+  document.head.appendChild(counter);
   const url = new URL(location.href);
   if (url.searchParams.get('__exhibition') !== 'enter') return;
   url.searchParams.delete('__exhibition');

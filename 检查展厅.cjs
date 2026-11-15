@@ -131,6 +131,8 @@ async function main() {
       next: !!document.getElementById('next')
     })`);
     if (!ui.searchHidden || !ui.share || !ui.help || !ui.present || !ui.prev || !ui.next) throw new Error('新增控件缺失：' + JSON.stringify(ui));
+    const counterSrc = await cdp.evaluate(`document.querySelector('script[data-goatcounter]')?.getAttribute('data-goatcounter')`);
+    if (counterSrc !== 'https://jiangbeichen.goatcounter.com/count') throw new Error('GoatCounter 脚本缺失或站点地址错误：' + counterSrc);
     console.log('启动与标签：通过 (' + labels.join(' / ') + ')');
     const click = selector => cdp.evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`);
 
