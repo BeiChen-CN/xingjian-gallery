@@ -114,10 +114,12 @@ async function main() {
     await cdp.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
 
     const galleryUrl = pathToFileURL(path.join(ROOT, '学员AI作品展.html')).href;
+    await cdp.send('Page.addScriptToEvaluateOnNewDocument', { source: `window.__bootSeen=false;new MutationObserver(()=>{if(document.body&&document.body.classList.contains('booting'))window.__bootSeen=true}).observe(document,{subtree:true,attributes:true,attributeFilter:['class']});` });
     await cdp.send('Page.navigate', { url: galleryUrl });
     await waitFor(async () => {
       try { return await cdp.evaluate(`document.body.classList.contains('scene-ready')`); } catch { return false; }
     }, 30000, '展厅启动');
+    if (!(await cdp.evaluate(`window.__bootSeen`))) throw new Error('冷启动没有显示加载遮罩');
     const labels = await cdp.evaluate(`[...document.querySelectorAll('.label strong')].map(node => node.textContent)`);
     if (labels.length !== 4) throw new Error('标签数量应为 4，实际 ' + labels.length);
     const ui = await cdp.evaluate(`({
@@ -205,6 +207,15 @@ async function main() {
     const tour = await cdp.evaluate(`({ hash: location.hash, directoryOpen: document.body.classList.contains('directory-open'), toast: document.getElementById('toast').textContent })`);
     if (tour.hash !== '#work-4' || tour.directoryOpen || !tour.toast.includes('巡游')) throw new Error('自动巡游没有启动：' + JSON.stringify(tour));
     console.log('分享、帮助、展示、边缘箭头与巡游：通过');
+
+    await sleep(2500);
+    await cdp.send('Page.reload', { ignoreCache: true });
+    await waitFor(async () => {
+      try { return await cdp.evaluate(`document.body.classList.contains('scene-ready')`); } catch { return false; }
+    }, 30000, '热启动');
+    const warmState = await cdp.evaluate(`({ warm: document.body.classList.contains('texture-cache-warm'), booting: document.body.classList.contains('booting'), bootSeen: window.__bootSeen, boot: getComputedStyle(document.getElementById('boot')).visibility })`);
+    if (!warmState.warm || warmState.booting || warmState.bootSeen || warmState.boot !== 'hidden') throw new Error('热启动没有命中纹理缓存：' + JSON.stringify(warmState));
+    console.log('纹理缓存与热启动：通过');
 
     const broken = fs.mkdtempSync(path.join(os.tmpdir(), 'gallery-broken-'));
     cleanup.push(() => fs.rmSync(broken, { recursive: true, force: true }));

@@ -39,7 +39,7 @@ reduced.addEventListener('change',()=>{if(!reduced.matches)return;++panelSequenc
 document.getElementById('error-retry').addEventListener('click',()=>location.reload());brand.addEventListener('click',()=>{stopTour();resetCamera()});share.addEventListener('click',copyCurrentLink);
 const guide=document.querySelector('.guide');if(coarse&&guide)guide.textContent='拖动旋转 · 双指缩放 · 轻触星球进入';
 const bootText=document.getElementById('boot-text');if(bootText)bootText.textContent=works.length?'正在点亮 '+works.length+' 颗星球…':'正在准备展厅…';
-function startScene(){
+async function startScene(){
 try{
  if(!Array.isArray(sourceWorks))throw Error('作品数据未加载');
  if(!window.THREE)throw Error('Three.js 未加载');
@@ -112,6 +112,23 @@ try{
  // 2048 is comfortable for a showcase set; larger classes trade texel density for a bounded GPU/CPU budget.
  const lowMemory=(navigator.deviceMemory||8)<=4;
  const textureWidth=Math.min(renderer.capabilities.maxTextureSize,lowMemory?1024:works.length<=8?2048:works.length<=16?1536:1024);
+ const textureCache=new Map(),textureDBName='xingjian-textures',textureStore='maps',textureCacheVersion='v1';
+ let textureDBPromise=null,warm=false;
+ const textureKey=(w,i)=>[textureCacheVersion,textureWidth,i,w.url,w.color,w.bytes].join('|');
+ function openTextureDB(){if(!textureDBPromise)textureDBPromise=new Promise((resolve,reject)=>{const request=indexedDB.open(textureDBName,1);request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains(textureStore))db.createObjectStore(textureStore)};request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error)});return textureDBPromise}
+ function makeSurface(color,detail,kind){const width=textureWidth,height=width>>1,map=new THREE.DataTexture(color,width,height),packed=new THREE.DataTexture(detail,width,height,THREE.RGBAFormat,THREE.HalfFloatType);map.colorSpace=THREE.SRGBColorSpace;for(const image of [map,packed]){image.wrapS=THREE.RepeatWrapping;image.magFilter=THREE.LinearFilter;image.minFilter=THREE.LinearMipmapLinearFilter;image.generateMipmaps=true;image.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());image.needsUpdate=true}return {map,packed,kind,bumpScale:[1,.4,.12,.6][kind],relief:[.05,0,0,.022][kind],envMapIntensity:[.36,.55,.52,.35][kind]}}
+ async function preloadTextureCache(){
+  if(!('indexedDB' in window))return;
+  try{
+   const db=await openTextureDB(),keys=works.map((w,i)=>textureKey(w,i));
+   const values=await new Promise((resolve,reject)=>{const tx=db.transaction(textureStore,'readonly'),store=tx.objectStore(textureStore),out=new Array(keys.length);let left=keys.length;if(!left){resolve(out);return}keys.forEach((key,index)=>{const request=store.get(key);request.onsuccess=()=>{out[index]=request.result;if(--left===0)resolve(out)};request.onerror=()=>reject(request.error)});tx.onerror=()=>reject(tx.error)});
+   let hits=0;
+   keys.forEach((key,index)=>{const value=values[index];if(value&&value.width===textureWidth&&value.height===textureWidth>>1&&value.color&&value.color.byteLength===textureWidth*(textureWidth>>1)*4&&value.detail&&value.detail.byteLength===textureWidth*(textureWidth>>1)*8){textureCache.set(key,value);hits++}});
+   warm=works.length>0&&hits===works.length;
+   if(keys.length){const allKeys=await new Promise((resolve,reject)=>{const tx=db.transaction(textureStore,'readonly'),request=tx.objectStore(textureStore).getAllKeys();request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error)});const current=new Set(keys),stale=allKeys.filter(key=>!current.has(key));if(stale.length){const tx=db.transaction(textureStore,'readwrite'),store=tx.objectStore(textureStore);stale.forEach(key=>store.delete(key))}}
+  }catch(error){console.warn('纹理缓存不可用，将重新生成。',error)}
+ }
+ function saveTexture(key,color,detail){if(!('indexedDB' in window))return;openTextureDB().then(db=>{const tx=db.transaction(textureStore,'readwrite');tx.objectStore(textureStore).put({width:textureWidth,height:textureWidth>>1,color:color.buffer,detail:detail.buffer,savedAt:Date.now()},key)}).catch(()=>{})}
  function mineralHash(x,y,z){let n=Math.imul(x,374761393)^Math.imul(y,668265263)^Math.imul(z,2147483647);n=Math.imul(n^(n>>>13),1274126177);return (n^(n>>>16))>>>0}
  function mineralGradient(hash,x,y,z){const h=hash&15,u=h<8?x:y,v=h<4?y:h===12||h===14?x:z;return (h&1?-u:u)+(h&2?-v:v)}
  // Gradient noise with quintic blending avoids a grid of flat shading patches.
@@ -123,7 +140,9 @@ try{
  }
  // Profile order: sandstone, oxidized bronze, frosted quartz, wheel-thrown clay.
  function texture(w,i){
-  const width=textureWidth,height=width>>1,kind=i%4,color=new Uint8Array(width*height*4),detail=new Uint16Array(color.length),base=new THREE.Color(w.color||'#aaa58d').convertLinearToSRGB(),rgb=[base.r*255,base.g*255,base.b*255];
+  const kind=i%4,key=textureKey(w,i),cached=textureCache.get(key);
+  if(cached)return makeSurface(new Uint8Array(cached.color),new Uint16Array(cached.detail),kind);
+  const width=textureWidth,height=width>>1,color=new Uint8Array(width*height*4),detail=new Uint16Array(color.length),base=new THREE.Color(w.color||'#aaa58d').convertLinearToSRGB(),rgb=[base.r*255,base.g*255,base.b*255];
   const darkScale=[.64,.7,.55,.62][kind],lightScale=[.86,.8,.42,.9][kind],whiteMix=[.14,.1,.5,.1][kind];
   const dark=rgb.map(v=>v*darkScale),light=rgb.map(v=>v*lightScale+255*whiteMix);
   if(kind===1){dark[0]=157*.8+rgb[0]*.2;dark[1]=117*.8+rgb[1]*.2;dark[2]=65*.8+rgb[2]*.2;for(let k=0;k<3;k++)light[k]=rgb[k]*.66}
@@ -143,10 +162,11 @@ try{
     detail[p]=THREE.DataUtils.toHalfFloat(bump);detail[p+1]=THREE.DataUtils.toHalfFloat(rough);detail[p+2]=THREE.DataUtils.toHalfFloat(metal);detail[p+3]=THREE.DataUtils.toHalfFloat(1);
    }
   }
-  const map=new THREE.DataTexture(color,width,height),packed=new THREE.DataTexture(detail,width,height,THREE.RGBAFormat,THREE.HalfFloatType);map.colorSpace=THREE.SRGBColorSpace;
-  for(const image of [map,packed]){image.wrapS=THREE.RepeatWrapping;image.magFilter=THREE.LinearFilter;image.minFilter=THREE.LinearMipmapLinearFilter;image.generateMipmaps=true;image.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());image.needsUpdate=true}
-  return {map,packed,kind,bumpScale:[1,.4,.12,.6][kind],relief:[.05,0,0,.022][kind],envMapIntensity:[.36,.55,.52,.35][kind]};
+  const surface=makeSurface(color,detail,kind);saveTexture(key,color,detail);return surface;
  }
+ await preloadTextureCache();
+ if(warm)document.body.classList.add('texture-cache-warm');
+ else{document.body.classList.add('booting');await new Promise(resolve=>requestAnimationFrame(()=>resolve()));await new Promise(resolve=>setTimeout(resolve,0))}
  works.forEach((w,i)=>{
   const radius=1.1+(max===min?.5:(logs[i]-min)/(max-min))*1.15,root=new THREE.Group();root.position.fromArray(w.pos||[Math.cos(i*2.4)*7,Math.sin(i*1.6)*4,Math.sin(i*2.4)*7]);scene.add(root);
   const orbitRadius=root.position.length(),orbitUp=new THREE.Vector3(0,root.position.y,root.position.z);if(orbitUp.lengthSq()<.0001)orbitUp.copy(instrumentUp);else orbitUp.normalize();if(orbitUp.dot(instrumentUp)<0)orbitUp.negate();
@@ -170,6 +190,7 @@ try{
   const ripple=new THREE.Mesh(rippleGeometry,new THREE.MeshBasicMaterial({color:'#ddc79d',transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending}));ripple.visible=false;root.add(ripple);
   byWork.set(w,{root,sphere,radius,label,glow,selectionRing,ripple,rippleAge:2,index:i,reveal:reduced.matches?1:0,orbit,orbitRadius,orbitUp,trace,marker,baseAngle,angle:baseAngle,orbitClock:0,driftPhase:i*1.7,driftRate:.15+i*.011,driftAmplitude:Math.min(.105,.48/orbitRadius),motionWeight:1,motionVelocity:0,spinBase:[.038,.022,.032,.027][surface.kind],envBase:surface.envMapIntensity,highlight:0});
  });
+ textureCache.clear();
  const target=new THREE.Vector3(),desiredTarget=new THREE.Vector3(),offset=new THREE.Vector3(),raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
  const narrow=()=>innerWidth<=760,panoramaDistance=()=>narrow()?43:(innerWidth>=1600?20:24),panoramaTarget=()=>desiredTarget.set(narrow()?.4:0,narrow()?1.3:0,0);
  let yaw=.18,pitch=.15,wantedYaw=yaw,wantedPitch=pitch,yawVelocity=0,pitchVelocity=0,distance=panoramaDistance()*(reduced.matches?1:1.08),wantedDistance=panoramaDistance(),zoomVelocity=0,selected=null,hovered=null,entering=false,pendingEntry=null,pendingConfirmed=false,pixelRatio=renderer.getPixelRatio();
