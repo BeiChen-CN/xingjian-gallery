@@ -149,6 +149,8 @@ async function main() {
     }, 4000, '选中第一颗星球');
     const second = await pickPoint(labels[1]);
     if (!second) throw new Error('未找到第二颗星球的屏幕位置');
+    const preview = await cdp.evaluate(`({ text: document.querySelector('#focus strong').textContent, selected: document.getElementById('focus').classList.contains('selected') })`);
+    if (!preview.text.startsWith(labels[1]) || preview.selected) throw new Error('选中后悬停没有切换下方信息条');
     await wheel(second, -120);
     await waitFor(async () => {
       const state = await cdp.evaluate(`(() => {
