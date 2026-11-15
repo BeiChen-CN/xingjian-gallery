@@ -167,6 +167,17 @@ async function main() {
     if (!errorText.includes('作品数据未加载')) throw new Error('错误提示未说明作品数据缺失：' + errorText);
     console.log('缺少作品数据提示：通过');
 
+    const noLib = fs.mkdtempSync(path.join(os.tmpdir(), 'gallery-nolib-'));
+    cleanup.push(() => fs.rmSync(noLib, { recursive: true, force: true }));
+    for (const file of ['学员AI作品展.html', '作品数据.js', '宇宙展厅.js']) fs.copyFileSync(path.join(ROOT, file), path.join(noLib, file));
+    await cdp.send('Page.navigate', { url: pathToFileURL(path.join(noLib, '学员AI作品展.html')).href });
+    await waitFor(async () => {
+      try { return await cdp.evaluate(`getComputedStyle(document.getElementById('error')).display === 'block'`); } catch { return false; }
+    }, 8000, '缺少三维库时的错误提示');
+    const libError = await cdp.evaluate(`document.getElementById('error').textContent`);
+    if (!libError.includes('三维库未加载')) throw new Error('错误提示未说明三维库缺失：' + libError);
+    console.log('缺少三维库提示：通过');
+
     const pageErrors = cdp.events.filter(event => event.method === 'Runtime.exceptionThrown');
     if (pageErrors.length) throw new Error('页面出现未捕获异常：' + pageErrors.map(event => event.params.exceptionDetails.text).join('; '));
     console.log('检查展厅：全部通过');

@@ -3,6 +3,8 @@
 'use strict';
 const sourceWorks=window.WORKS,works=Array.isArray(sourceWorks)?sourceWorks:[], host=document.getElementById('scene'), list=document.getElementById('list'), search=document.getElementById('search'), panel=document.getElementById('panel'),toggle=document.getElementById('toggle'),closeButton=document.getElementById('panel-close'),focus=document.getElementById('focus'),notice=document.getElementById('notice'),labels=document.getElementById('labels');
 const reduced=matchMedia('(prefers-reduced-motion: reduce)'),coarse=matchMedia('(pointer: coarse)').matches||(navigator.maxTouchPoints>0&&innerWidth<=760);
+const exhibition=window.EXHIBITION||{},exhibitionTitle=exhibition.title||'星间',exhibitionSubtitle=exhibition.subtitle||'学员 AI 作品展';
+document.title=exhibitionTitle+' · '+exhibitionSubtitle;document.querySelector('.brand h1').textContent=exhibitionTitle;document.querySelector('.brand small').textContent=exhibitionSubtitle;
 document.getElementById('total').textContent=works.length;toggle.setAttribute('aria-label','作品目录，共 '+works.length+' 件作品');
 let selectPlanet=()=>{}, resetCamera=()=>{}, invalidateLabelLayout=()=>{},sceneReady=false;
 function setSceneReady(ready){sceneReady=ready;document.body.classList.toggle('scene-ready',ready);document.getElementById('reset').disabled=!ready;for(const button of list.querySelectorAll('button'))button.disabled=!ready}
@@ -157,7 +159,7 @@ try{
  });
  const target=new THREE.Vector3(),desiredTarget=new THREE.Vector3(),offset=new THREE.Vector3(),raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
  const narrow=()=>innerWidth<=760,panoramaDistance=()=>narrow()?43:24,panoramaTarget=()=>desiredTarget.set(narrow()?.4:0,narrow()?1.3:0,0);
- let yaw=.18,pitch=.15,wantedYaw=yaw,wantedPitch=pitch,yawVelocity=0,pitchVelocity=0,distance=panoramaDistance()*(reduced.matches?1:1.08),wantedDistance=panoramaDistance(),zoomVelocity=0,selected=null,hovered=null,entering=false,pendingEntry=null,pendingConfirmed=false;
+ let yaw=.18,pitch=.15,wantedYaw=yaw,wantedPitch=pitch,yawVelocity=0,pitchVelocity=0,distance=panoramaDistance()*(reduced.matches?1:1.08),wantedDistance=panoramaDistance(),zoomVelocity=0,selected=null,hovered=null,entering=false,pendingEntry=null,pendingConfirmed=false,pixelRatio=renderer.getPixelRatio();
  const clamp=THREE.MathUtils.clamp,entryVeil=document.getElementById('entry-veil');panoramaTarget();target.copy(desiredTarget);
  const entry={work:null,elapsed:0,duration:1.35,fromLog:0,toLog:0,velocity:0,orbitAngle:0,opaqueFrame:false,fromTarget:new THREE.Vector3(),targetVelocity:new THREE.Vector3()};
  function positionCamera(){const cp=Math.cos(pitch);offset.set(Math.sin(yaw)*cp,Math.sin(pitch),Math.cos(yaw)*cp).multiplyScalar(distance);camera.position.copy(target).add(offset);camera.lookAt(target);camera.updateMatrixWorld()}
@@ -182,13 +184,14 @@ try{
   entryVeil.style.transition='none';entryVeil.style.opacity='0';document.body.classList.add('is-entering');
   info(w,'进入中 · Esc 或向外取消');
  }
- selectPlanet=w=>{const o=byWork.get(w);if(!o)return;cancelEntry();selected=w;wantedYaw=yaw+.07;wantedPitch=pitch;invalidateLabelLayout();desiredTarget.copy(o.root.position);wantedDistance=Math.max(o.radius*4.5,8);info(w,'点击进入，或继续靠近')};
- resetCamera=()=>{cancelEntry();selected=null;hovered=null;invalidateLabelLayout();panoramaTarget();wantedDistance=panoramaDistance();wantedYaw=.18;wantedPitch=.15;info(null);status('已返回全景')};
+ function setHash(w){const index=w?works.indexOf(w):-1;try{history.replaceState(null,'',index>=0?'#work-'+(index+1):location.pathname+location.search)}catch{}}
+ selectPlanet=w=>{const o=byWork.get(w);if(!o)return;cancelEntry();selected=w;setHash(w);wantedYaw=yaw+.07;wantedPitch=pitch;invalidateLabelLayout();desiredTarget.copy(o.root.position);wantedDistance=Math.max(o.radius*4.5,8);info(w,'点击进入，或继续靠近')};
+ resetCamera=()=>{cancelEntry();selected=null;hovered=null;setHash(null);invalidateLabelLayout();panoramaTarget();wantedDistance=panoramaDistance();wantedYaw=.18;wantedPitch=.15;info(null);status('已返回全景')};
  function zoom(delta,x,y,pickFirst){
   if(!delta||entering)return;
   if(delta>0){const cancel=!!pendingEntry||!!entry.work;cancelEntry();if(cancel)info(selected,'已取消进入')}
   if(entry.work)return;
-  if(delta<0){const over=pick(x,y),w=(pickFirst&&over)||selected||over||nearest(x,y);if(w&&w!==selected){selected=w;wantedYaw=yaw+.07;invalidateLabelLayout();desiredTarget.copy(byWork.get(w).root.position);wantedDistance=Math.max(wantedDistance,byWork.get(w).radius*4);info(w,'继续滚动靠近')}}
+  if(delta<0){const over=pick(x,y),w=(pickFirst&&over)||selected||over||nearest(x,y);if(w&&w!==selected){selected=w;setHash(w);wantedYaw=yaw+.07;invalidateLabelLayout();desiredTarget.copy(byWork.get(w).root.position);wantedDistance=Math.max(wantedDistance,byWork.get(w).radius*4);info(w,'继续滚动靠近')}}
   const r=selected?byWork.get(selected).radius:1;wantedDistance=clamp(wantedDistance*Math.exp(delta*.0012),r*1.75,75);
   if(delta<0&&selected&&wantedDistance<=r*1.8){if(pendingEntry!==selected){pendingEntry=selected;pendingConfirmed=false}else pendingConfirmed=true;info(selected,'继续滚动进入 · 向外取消')}
  }
@@ -199,10 +202,10 @@ try{
  const fingers=new Map();let drag=null,pinch=null,moved=false;canvas.addEventListener('pointerdown',e=>{cancelEntry();const work=pick(e.clientX,e.clientY);if(work)hovered=work;wantedYaw=yaw;wantedPitch=pitch;canvas.setPointerCapture(e.pointerId);fingers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(fingers.size===1){drag={x:e.clientX,y:e.clientY,work};moved=false}else if(fingers.size===2){const a=[...fingers.values()];pinch=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);moved=true}});
  canvas.addEventListener('pointermove',e=>{if(!fingers.has(e.pointerId)){if(entry.work)return;if(e.pointerType==='mouse'){hovered=pick(e.clientX,e.clientY);canvas.style.cursor=hovered?'pointer':'grab';info(hovered||selected,pendingEntry?'继续滚动进入 · 向外取消':hovered?'点击进入':'继续靠近进入')}return}const prev=fingers.get(e.pointerId);fingers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(fingers.size>=2){const a=[...fingers.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(pinch&&d>0)zoom(-Math.log(d/pinch)*830,(a[0].x+a[1].x)/2,(a[0].y+a[1].y)/2);pinch=d;moved=true}else if(drag){wantedYaw-=(e.clientX-prev.x)*.006;wantedPitch=clamp(wantedPitch+(e.clientY-prev.y)*.006,-1.5,1.5);if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>5)moved=true}});
  canvas.addEventListener('pointerup',e=>{if(fingers.size===1&&!moved&&drag)enter(drag.work||pick(e.clientX,e.clientY));fingers.delete(e.pointerId);pinch=null;if(fingers.size===1){const p=[...fingers.values()][0];drag={x:p.x,y:p.y,work:null};moved=true}else if(!fingers.size){drag=null;hovered=null}});canvas.addEventListener('pointercancel',e=>{fingers.delete(e.pointerId);drag=null;pinch=null;moved=true;hovered=null});canvas.addEventListener('pointerleave',()=>{if(!fingers.size&&!entry.work){hovered=null;info(selected)}});
- window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.setSize(innerWidth,innerHeight);if(!selected){panoramaTarget();wantedDistance=panoramaDistance()}invalidateLabelLayout()});
+ window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();pixelRatio=Math.min(pixelRatio,Math.min(devicePixelRatio||1,2));renderer.setPixelRatio(pixelRatio);renderer.setSize(innerWidth,innerHeight);if(!selected){panoramaTarget();wantedDistance=panoramaDistance()}invalidateLabelLayout()});
  window.addEventListener('resize',()=>{nearStars.material.uniforms.pixelScale.value=renderer.getPixelRatio()});
  window.addEventListener('resize',()=>{dust.material.uniforms.pixelScale.value=renderer.getPixelRatio()});
- const occlusionSphere=new THREE.Sphere(),occlusionHit=new THREE.Vector3(),occlusionDirection=new THREE.Vector3(),labelProjection=new THREE.Vector3(),planetProjection=new THREE.Vector3();let lastFrame=0,frameId=0,motionTime=0,revealTime=0,lastLabelLayout=-Infinity,layoutDirty=true;
+ const occlusionSphere=new THREE.Sphere(),occlusionHit=new THREE.Vector3(),occlusionDirection=new THREE.Vector3(),labelProjection=new THREE.Vector3(),planetProjection=new THREE.Vector3();let lastFrame=0,frameId=0,motionTime=0,revealTime=0,lastLabelLayout=-Infinity,layoutDirty=true,qualityFrames=0,qualityTime=0;
  canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();if(frameId)cancelAnimationFrame(frameId);frameId=0;const error=document.getElementById('error');error.textContent='图形上下文丢失，正在尝试恢复…';error.style.display='block'});
  canvas.addEventListener('webglcontextrestored',()=>{const error=document.getElementById('error');error.style.display='none';lastFrame=0;if(!frameId)frameId=requestAnimationFrame(animate)});
  // 仅在尺寸、内容或可见状态变化时读取 DOM；动画帧复用几何与布局对象。
@@ -247,6 +250,7 @@ try{
  }
  function animate(now){
   frameId=0;if(document.hidden)return;
+  if(reduced.matches&&lastFrame&&now-lastFrame<1000/30){frameId=requestAnimationFrame(animate);return}
   const elapsed=lastFrame?Math.max(0,(now-lastFrame)/1000):1/60,dt=Math.min(elapsed,.08);lastFrame=now;
   const still=reduced.matches,ease=still?1:1-Math.exp(-5.3*dt),motionDecay=Math.exp(-6*dt);if(!still){motionTime+=Math.min(elapsed,.1);revealTime+=elapsed*(selected||hovered||panelOpen||fingers.size>0?3:1)}stars.material.opacity=.64;
   for(const w of works){
@@ -309,11 +313,14 @@ try{
    o.sphere.material.roughness=1-o.highlight*.045;o.sphere.material.envMapIntensity=o.envBase*(1+o.highlight*.08);o.sphere.material.emissiveIntensity=o.highlight*.012;o.glow.material.opacity=.04+o.highlight*.06;
   }
   layoutLabels(now);
+  if(!still){qualityFrames++;qualityTime+=elapsed;if(qualityFrames>=90){const average=qualityTime/qualityFrames;if(average>.036&&pixelRatio>1){pixelRatio=Math.max(1,pixelRatio-.25);renderer.setPixelRatio(pixelRatio);renderer.setSize(innerWidth,innerHeight);nearStars.material.uniforms.pixelScale.value=pixelRatio;dust.material.uniforms.pixelScale.value=pixelRatio;invalidateLabelLayout()}qualityFrames=0;qualityTime=0}}
   renderer.render(scene,camera);frameId=requestAnimationFrame(animate);
  }
  window.addEventListener('pageshow',e=>{entering=false;cancelEntry();zoomVelocity=0;setPanel(false);if(e.persisted){resetCamera();distance=wantedDistance;target.copy(desiredTarget);yaw=wantedYaw;pitch=wantedPitch;yawVelocity=0;pitchVelocity=0;positionCamera()}if(!frameId)frameId=requestAnimationFrame(animate)});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){if(frameId)cancelAnimationFrame(frameId);frameId=0;lastFrame=0}else if(!frameId){lastFrame=0;frameId=requestAnimationFrame(animate)}});
  positionCamera();scene.updateMatrixWorld();renderer.render(scene,camera);lastFrame=performance.now();setSceneReady(true);frameId=requestAnimationFrame(animate);
+ const hashWork=/^#work-(\d+)$/.exec(location.hash);if(hashWork){const hashSelection=works[Number(hashWork[1])-1];if(hashSelection)selectPlanet(hashSelection)}
+ window.addEventListener('hashchange',()=>{const match=/^#work-(\d+)$/.exec(location.hash),work=match?works[Number(match[1])-1]:null;if(work){if(work!==selected)selectPlanet(work)}else if(selected)resetCamera()});
 }catch(err){setSceneReady(false);console.error(err);const boot=document.getElementById('boot');if(boot)boot.hidden=true;const error=document.getElementById('error');error.textContent=err.message==='作品数据未加载'?'作品数据未加载：请确认 作品数据.js 与展厅在同一目录。':err.message==='Three.js 未加载'?'三维库未加载：请确认 three.min.js 与展厅在同一目录。':'三维场景不可用，请从作品目录进入。';error.style.display='block'}
 }
 requestAnimationFrame(()=>setTimeout(startScene,0));

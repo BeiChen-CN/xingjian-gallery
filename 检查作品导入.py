@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import stat
 import tempfile
 import unittest
 import zipfile
@@ -145,6 +146,27 @@ class ImportTests(unittest.TestCase):
         works = module.read_works()
         self.assertEqual(len(works), 2)
         self.assertNotEqual(works[0]['url'], works[1]['url'])
+
+    def test_overlong_title_rejected(self):
+        source = module.ROOT / 'sample.html'
+        source.write_text('<title>样例</title>', encoding='utf-8')
+        with patch.object(module.simpledialog, 'askstring', side_effect=['长' * 81, '测试学员']), self.assertRaises(ValueError):
+            module.import_work(source, None)
+        self.assertEqual(module.read_works(), [])
+        self.assertEqual(list(module.DEST.iterdir()), [])
+
+    def test_read_only_source_still_writable(self):
+        source = module.ROOT / 'locked.html'
+        source.write_text('<title>只读</title>', encoding='utf-8')
+        source.chmod(stat.S_IREAD)
+        try:
+            with patch.object(module.simpledialog, 'askstring', side_effect=['只读作品', '测试学员']):
+                self.assertTrue(module.import_work(source, None))
+            destination = module.ROOT / module.read_works()[0]['url']
+            self.assertTrue(destination.is_file())
+            self.assertTrue(destination.stat().st_mode & stat.S_IWRITE)
+        finally:
+            source.chmod(stat.S_IWRITE)
 
 if __name__ == '__main__':
     unittest.main()

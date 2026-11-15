@@ -172,7 +172,7 @@ def import_work(source, parent):
         elif source.suffix.lower() in ('.html', '.htm'):
             if source.stat().st_size > MAX_UNPACKED:
                 raise ValueError('单个 HTML 超过 200 MiB。')
-            shutil.copy2(source, staging / source.name)
+            shutil.copyfile(source, staging / source.name)
         else:
             raise ValueError('请选择 HTML 或 ZIP 文件。')
         entry = choose_entry(staging)
@@ -187,6 +187,8 @@ def import_work(source, parent):
         title, author = title.strip(), author.strip()
         if not title or not author:
             raise ValueError('作品名称和学员姓名需要填写。')
+        if len(title) > 80 or len(author) > 40:
+            raise ValueError('作品名称不超过 80 字，学员姓名不超过 40 字。')
         relative = entry.relative_to(staging)
         size = entry.stat().st_size
         with commit_lock():
@@ -222,9 +224,18 @@ def main():
     root = Tk()
     root.withdraw()
     try:
-        source = filedialog.askopenfilename(title='新增学员作品（保留已有版本）', filetypes=[('网页或压缩包', '*.html *.htm *.zip'), ('所有文件', '*.*')])
-        if source and import_work(Path(source), root):
-            messagebox.showinfo('新增完成', '已新增一件作品，已有作品和条目保持保留。请刷新展厅页面。')
+        sources = filedialog.askopenfilenames(title='新增学员作品（可多选，保留已有版本）', filetypes=[('网页或压缩包', '*.html *.htm *.zip'), ('所有文件', '*.*')])
+        imported, failures = 0, []
+        for source in sources:
+            try:
+                if import_work(Path(source), root):
+                    imported += 1
+            except Exception as exc:
+                failures.append(f'{Path(source).name}: {exc}')
+        if imported:
+            messagebox.showinfo('新增完成', f'已新增 {imported} 件作品，已有作品和条目保持保留。请刷新展厅页面。')
+        if failures:
+            messagebox.showerror('部分导入失败', '\n'.join(failures))
     except Exception as exc:
         messagebox.showerror('导入失败', str(exc))
     finally:
